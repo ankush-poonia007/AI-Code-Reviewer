@@ -1,63 +1,79 @@
 import os
-from pydantic import BaseModel, Field, field_validator
-from dotenv import load_dotenv
+from pydantic import Field, field_validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-# Ensure the local root .env file is proactively parsed and loaded into environment variables
-load_dotenv()
-
-class Settings(BaseModel):
+class Settings(BaseSettings):
     """
     Centralized Application Configuration.
-    Acts as the exclusive single source of truth for runtime variables,
-    enforcing rigorous Pydantic 2.x schema validation at initialization.
+    Single source of truth utilizing pydantic-settings to automatically pull,
+    type-convert, and validate all multi-environment provider variables.
     """
-    
-    # ==========================================
-    # Application Config
-    # ==========================================
-    APP_NAME: str = Field(default=os.getenv("APP_NAME", "AI Code Review Assistant"))
-    APP_VERSION: str = Field(default=os.getenv("APP_VERSION", "1.0.0"))
-    DEBUG: bool = Field(default=os.getenv("DEBUG", "True").lower() in ("true", "1", "yes", "on"))
-    HOST: str = Field(default=os.getenv("HOST", "127.0.0.1"))
-    PORT: int = Field(default=int(os.getenv("PORT", "8000")))
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore"
+    )
 
     # ==========================================
-    # Database Config
+    # Core Application Configuration
     # ==========================================
-    DATABASE_URL: str = Field(default=os.getenv("DATABASE_URL", "sqlite:///./ai_code_reviewer.db"))
+    APP_NAME: str = Field(default="AI Code Review Assistant")
+    APP_VERSION: str = Field(default="1.0.0")
+    DEBUG: bool = Field(default=True)
+    HOST: str = Field(default="127.0.0.1")
+    PORT: int = Field(default=8000)
 
     # ==========================================
-    # Groq Config
+    # Persistent Storage Layout
     # ==========================================
-    GROQ_API_KEY: str = Field(default=os.getenv("GROQ_API_KEY", ""))
-    DEFAULT_MODEL: str = Field(default=os.getenv("DEFAULT_MODEL", "llama3-70b-8192"))
-    MAX_TOKENS: int = Field(default=int(os.getenv("MAX_TOKENS", "4096")))
-    TEMPERATURE: float = Field(default=float(os.getenv("TEMPERATURE", "0.2")))
+    DATABASE_URL: str = Field(default="sqlite:///./ai_code_reviewer.db")
 
     # ==========================================
-    # Uploads & Reports Storage Config
+    # Provider-Agnostic LLM Infrastructure
     # ==========================================
-    UPLOAD_DIR: str = Field(default=os.getenv("UPLOAD_DIR", "uploads"))
-    REPORT_DIR: str = Field(default=os.getenv("REPORT_DIR", "reports"))
-    MAX_FILE_SIZE_MB: int = Field(default=int(os.getenv("MAX_FILE_SIZE_MB", "5")))
+    LLM_PROVIDER: str = Field(default="groq")  # Supported: "groq", "gemini", "ollama"
+    DEFAULT_MODEL: str = Field(default="llama3-70b-8192")
+    MAX_TOKENS: int = Field(default=4096)
+    TEMPERATURE: float = Field(default=0.2)
+
+    # Individual Ecosystem API Target Tokens
+    GROQ_API_KEY: str = Field(default="")
+    GOOGLE_API_KEY: str = Field(default="")
+    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
 
     # ==========================================
-    # Validation Rules
+    # File Staging & Upload Directory Limits
     # ==========================================
-    @field_validator("GROQ_API_KEY", mode="before")
+    UPLOAD_DIR: str = Field(default="uploads")
+    REPORT_DIR: str = Field(default="reports")
+    MAX_FILE_SIZE_MB: int = Field(default=5)
+
+    # ==========================================
+    # Runtime Guardrail Interceptors
+    # ==========================================
+    @field_validator("LLM_PROVIDER", mode="before")
     @classmethod
-    def validate_groq_key(cls, value: str) -> str:
-        """
-        Guards application instantiation by forcing strict validation of the Groq credential.
-        Raises an immediate ValueError if the key is missing or is left as a placeholder.
-        """
-        cleaned_value = str(value).strip() if value else ""
-        if not cleaned_value or cleaned_value == "gsk_your_actual_groq_api_key_here":
+    def validate_provider_selection(cls, value: str) -> str:
+        """Ensures selected AI orchestrator engine is a recognized platform target."""
+        cleaned = str(value).strip().lower() if value else "groq"
+        allowed_platforms = {"groq", "gemini", "ollama"}
+        if cleaned not in allowed_platforms:
             raise ValueError(
-                "\n[CRITICAL RUNTIME ERROR] GROQ_API_KEY is missing or unconfigured in your .env file.\n"
-                "Please add a valid Groq API credential before launching the application backend."
+                f"\n[CONFIG CRITICAL] LLM_PROVIDER '{cleaned}' is unsupported.\n"
+                f"Please update your .env to target one of: {list(allowed_platforms)}"
             )
-        return cleaned_value
+        return cleaned
 
-# Instantiate a single, global settings object for system-wide consumption
+    def verify_active_credentials(self) -> None:
+        """
+        Dynamically intercepts and ensures the specific API key for the 
+        currently chosen provider exists at application boot time.
+        """
+        provider = self.LLM_PROVIDER.lower()
+        if provider == "groq" and (not self.GROQ_API_KEY or "your_actual" in self.GROQ_API_KEY):
+            raise ValueError("\n[CONFIG CRITICAL] GROQ_API_KEY is missing or unconfigured in your .env file.")
+        elif provider == "gemini" and (not self.GOOGLE_API_KEY or "your_actual" in self.GOOGLE_API_KEY):
+            raise ValueError("\n[CONFIG CRITICAL] GOOGLE_API_KEY is missing or unconfigured in your .env file.")
+
+# Instantiate a single, global settings instance for system-wide consumption
 settings = Settings()

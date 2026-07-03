@@ -1,13 +1,17 @@
 from enum import Enum
 
 # =====================================================================
-# 1️⃣ Severity Levels
+# Database State & Security Validation Enums
 # =====================================================================
+class ReviewStatus(str, Enum):
+    """Execution state tracking for code analysis pipelines."""
+    PENDING = "PENDING"
+    COMPLETED = "COMPLETED"
+    FAILED = "FAILED"
+
+
 class ReviewSeverity(str, Enum):
-    """
-    Risk evaluation tiers for bugs, architectural problems, 
-    and security vulnerabilities discovered during code analysis.
-    """
+    """Threat severity levels for engineering vulnerabilities."""
     INFO = "INFO"
     LOW = "LOW"
     MEDIUM = "MEDIUM"
@@ -15,13 +19,8 @@ class ReviewSeverity(str, Enum):
     CRITICAL = "CRITICAL"
 
 
-# =====================================================================
-# 2️⃣ Review Categories
-# =====================================================================
 class ReviewCategory(str, Enum):
-    """
-    Structured domains that the AI core must evaluate.
-    """
+    """Structured assessment targets defined by schema specifications."""
     CODE_QUALITY = "CODE_QUALITY"
     BUG_DETECTION = "BUG_DETECTION"
     SECURITY_ANALYSIS = "SECURITY_ANALYSIS"
@@ -30,13 +29,8 @@ class ReviewCategory(str, Enum):
     SUGGESTIONS = "SUGGESTIONS"
 
 
-# =====================================================================
-# 3️⃣ Supported Languages & 4️⃣ Allowed File Extensions
-# =====================================================================
 class SupportedLanguage(str, Enum):
-    """
-    Explicitly supported programming language engines.
-    """
+    """Explicitly supported language profiles for source file parsing."""
     PYTHON = "python"
     JAVA = "java"
     C = "c"
@@ -48,7 +42,9 @@ class SupportedLanguage(str, Enum):
     UNKNOWN = "unknown"
 
 
-# Mapping dictionary to resolve source file extensions to proper languages
+# =====================================================================
+# File Extension Mappings
+# =====================================================================
 ALLOWED_EXTENSIONS = {
     ".py": SupportedLanguage.PYTHON,
     ".java": SupportedLanguage.JAVA,
@@ -61,25 +57,14 @@ ALLOWED_EXTENSIONS = {
     ".rs": SupportedLanguage.RUST,
 }
 
-
 # =====================================================================
-# 5️⃣ Status Messages
+# Status Message Catalog
 # =====================================================================
 MSG_REVIEW_SUCCESS = "Code review processed and completed successfully."
 MSG_REVIEW_FAILED = "An unexpected error occurred during the code review pipeline."
-MSG_FILE_TOO_LARGE = "Uploaded file exceeds the maximum allowed storage footprint payload threshold."
+MSG_FILE_TOO_LARGE = "Uploaded file exceeds the maximum allowed storage payload threshold."
 MSG_UNSUPPORTED_LANG = "The submitted programming language format engine is unsupported or unknown."
 
-
-# =====================================================================
-# 6️⃣ Default Application Values
-# =====================================================================
 DEFAULT_REVIEW_SCORE = 0
 REPORT_FILE_PREFIX = "review_report_"
-
-
-# =====================================================================
-# 7️⃣ Project Metadata Defaults
-# =====================================================================
 METADATA_LICENSE = "MIT"
-SUPPORTED_CATEGORIES_LIST = [category.value for category in ReviewCategory]

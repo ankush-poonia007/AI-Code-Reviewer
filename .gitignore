@@ -30,3 +30,6 @@ reports/
 *.njsproj
 *.sln
 *.swp
+
+# Personal File
+notes.txt
