@@ -33,3 +33,52 @@ reports/
 
 # Personal File
 notes.txt
+
+# Create an empty .gitignore file at the root of the project
+New-Item -ItemType File -Force -Path .gitignore
+
+# Populate it with strict python, virtual environment, credentials, and database exclusions
+Set-Content -Path .gitignore -Value @"
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/
+python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Environment configurations and secret credentials keys
+.env
+.env.*
+secrets.json
+
+# Local persistent SQLite database storage cache file engines
+*.db
+*.sqlite3
+"@

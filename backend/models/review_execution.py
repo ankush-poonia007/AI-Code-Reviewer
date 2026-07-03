@@ -17,5 +17,10 @@ class ReviewExecution(BaseModel):
     processing_time_ms = Column(Integer, nullable=False)
     prompt_version = Column(String, nullable=True)
 
+    # Core token tracking columns synchronized with service mapping requirements
+    input_tokens = Column(Integer, nullable=False, default=0)
+    output_tokens = Column(Integer, nullable=False, default=0)
+    total_tokens = Column(Integer, nullable=False, default=0)
+
     # Contextual connection mappings back up to parent database entity record
     review = relationship("Review", back_populates="execution")

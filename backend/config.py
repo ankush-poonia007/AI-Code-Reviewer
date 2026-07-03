@@ -32,13 +32,16 @@ class Settings(BaseSettings):
     # Provider-Agnostic LLM Infrastructure
     # ==========================================
     LLM_PROVIDER: str = Field(default="groq")  # Supported: "groq", "gemini", "ollama"
-    DEFAULT_MODEL: str = Field(default="llama3-70b-8192")
     MAX_TOKENS: int = Field(default=4096)
     TEMPERATURE: float = Field(default=0.2)
 
-    # Individual Ecosystem API Target Tokens
+    # Individual Ecosystem API Target Tokens & Models
     GROQ_API_KEY: str = Field(default="")
-    GOOGLE_API_KEY: str = Field(default="")
+    GROQ_MODEL: str = Field(default="llama-3.3-70b-versatile")
+    
+    GEMINI_API_KEY: str = Field(default="")
+    GEMINI_MODEL: str = Field(default="gemini-2.5-flash")
+    
     OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
 
     # ==========================================

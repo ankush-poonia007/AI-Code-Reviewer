@@ -1,4 +1,5 @@
 from typing import List, Optional
+from uuid import UUID
 from sqlalchemy.orm import Session
 from backend.models.review import Review
 from backend.models.enums import ReviewStatusEnum
@@ -6,13 +7,12 @@ from backend.models.enums import ReviewStatusEnum
 class ReviewRepository:
     """
     Isolated data access gateway managing persistent CRUD actions for Review records.
-    Communicates exclusively with SQLAlchemy; contains no business or AI logic.
+    Communicates exclusively with SQLAlchemy; uses instance-based sessions.
     """
     def __init__(self, db: Session) -> None:
         """Initializes the repository with an active SQLAlchemy session."""
         self.db = db
 
-    @staticmethod
     def create(self, review: Review) -> Review:
         """
         Persists a new code review tracking record to the database.
@@ -23,41 +23,39 @@ class ReviewRepository:
         self.db.flush()
         return review
 
-
-    @staticmethod
-    def get_by_id(db: Session, review_id: str) -> Optional[Review]:
+    def get_by_id(self, review_id: UUID) -> Optional[Review]:
         """
-        Retrieves a specific review record using its unique UUID text key.
+        Retrieves a specific review record using its unique UUID key.
         """
-        return db.query(Review).filter(Review.id == review_id).first()
+        id_str = str(review_id)
+        return self.db.query(Review).filter(Review.id == id_str).first()
 
-    @staticmethod
-    def list_all(db: Session, skip: int = 0, limit: int = 10) -> List[Review]:
+    def list_all(self, skip: int = 0, limit: int = 10) -> List[Review]:
         """
         Returns a paginated list of historical code review records.
         """
-        return db.query(Review).order_by(Review.created_at.desc()).offset(skip).limit(limit).all()
+        return self.db.query(Review).order_by(Review.created_at.desc()).offset(skip).limit(limit).all()
 
-    @staticmethod
-    def update_status(db: Session, review_id: str, status: ReviewStatusEnum) -> Optional[Review]:
+    def update_status(self, review_id: UUID, status: ReviewStatusEnum) -> Optional[Review]:
         """
         Updates the operational tracking status of an active code review thread.
         """
-        review = db.query(Review).filter(Review.id == review_id).first()
+        id_str = str(review_id)
+        review = self.db.query(Review).filter(Review.id == id_str).first()
         if review:
             review.status = status
-            db.flush()
+            self.db.flush()
         return review
 
-    @staticmethod
-    def delete(db: Session, review_id: str) -> bool:
+    def delete(self, review_id: UUID) -> bool:
         """
         Removes a code review record from the database.
         Triggers database cascade rules automatically for downstream entities.
         """
-        review = db.query(Review).filter(Review.id == review_id).first()
+        id_str = str(review_id)
+        review = self.db.query(Review).filter(Review.id == id_str).first()
         if review:
-            db.delete(review)
-            db.flush()
+            self.db.delete(review)
+            self.db.flush()
             return True
         return False

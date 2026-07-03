@@ -1,32 +1,70 @@
+from contextlib import asynccontextmanager
+from typing import AsyncGenerator
 from fastapi import FastAPI
 from loguru import logger
-from backend.utils import setup_logging
+
 from backend.config import settings
-from backend.api.health import router as health_router
+from backend.utils.logger import setup_logging
+from backend.database.init_db import initialize_database
+from backend.api.exceptions import setup_exception_handlers
+from backend.api.v1.health import router as health_router
+from backend.api.router import api_router
+
 
 # =====================================================================
-# Centralized System Diagnostics Logging Initialization
+# 1️⃣ Application Lifecycle Lifespan Manager (ADR-048 Context Boundary)
 # =====================================================================
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    """
+    Manages non-blocking startup and shutdown hooks for the application instance.
+    Enforces ADR-048 by delaying database schema footprint creation until server boot.
+    """
+    logger.info("Server lifecycles initializing: Executing startup hooks...")
+    try:
+        # Automate database schema footprint checks cleanly on actual server boot
+        initialize_database()
+        logger.success("Application database bootstrap hook completed successfully.")
+    except Exception as e:
+        logger.critical(f"Server lifespan startup hook failed catastrophically: {str(e)}")
+        raise e
+
+    yield  # Hand over operational control matrix to the Uvicorn worker thread pipeline
+
+    logger.info("Server lifecycles terminating: Executing shutdown hooks cleanups...")
+
+
+# =====================================================================
+# 2️⃣ Application Core Bootstrap Setup Configuration
+# =====================================================================
+# Initialize the logging framework sink configurations instantly
 setup_logging()
-logger.info(f"Booting up {settings.APP_NAME} Framework (v{settings.APP_VERSION})...")
+logger.info(f"Assembling {settings.APP_NAME} Configuration Schemas (v{settings.APP_VERSION})...")
 
-# =====================================================================
-# Application Core Instantiation & Production Metadata
-# =====================================================================
+# Construct the central FastAPI instance bound directly to our clean lifespan manager
 app = FastAPI(
     title=settings.APP_NAME,
-    description=(
-        "An automated code analysis engine designed to evaluate source files, "
-        "detect bugs, assess security risks, and generate comprehensive quality scores "
-        "via Large Language Models."
-    ),
-    version=settings.APP_VERSION
+    version=settings.APP_VERSION,
+    description="Enterprise-grade AI-powered asynchronous code analysis, quality metrics calculation, and security auditing orchestrator engine.",
+    debug=settings.DEBUG,
+    lifespan=lifespan,
+    # Enriched Swagger Metadata Matrix Refinements
+    contact={
+        "name": "AI Reviewer Core Development Team",
+        "url": "https://github.com",
+    },
+    docs_url="/docs",
+    redoc_url="/redoc"
 )
 
-# =====================================================================
-# Router Registration Layer
-# =====================================================================
-# Attaches feature-based layout routing modules safely to the core engine instance
+# Bind global domain exception translation middleware framework matrix
+setup_exception_handlers(app)
+
+# Mount the structural, isolated route controller domains
+# Root level health verification gateway
 app.include_router(health_router)
 
-logger.success("FastAPI routers successfully mounted. Application ready.")
+# Centralized version-controlled endpoint feature router
+app.include_router(api_router, prefix="/api")
+
+logger.success("FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.")
