@@ -1,22 +1,21 @@
 from loguru import logger
-from backend.database.database import engine
-from backend.database.base import Base
-# Explicitly import models to register them on the Base metadata tree before creation
-from backend.models import Review, Issue, ReviewExecution
+from backend.database import Base, engine
 
-def init_database() -> None:
+def initialize_database() -> None:
     """
-    Bootstraps the relational storage engine by establishing the local SQLite database 
-    and automatically generating all missing tables matching our frozen schemas.
+    Ensures the structural relational database schemas exist on disk before 
+    the application layer boots up. This function is completely idempotent.
     """
-    logger.info("Initializing relational database storage schema generation...")
+    logger.info("Initializing database schema...")
     try:
-        # Inspect and emit table definitions to disk if they do not exist
+        # Core SQLAlchemy mechanism to verify schema existence and create missing structural paths
         Base.metadata.create_all(bind=engine)
-        logger.success("Database engine tables bootstrapped and verified successfully.")
+        logger.success("Database initialized successfully.")
     except Exception as e:
-        logger.critical(f"Database schema bootstrap failed: {str(e)}")
+        logger.critical(f"Database initialization failed: {str(e)}")
         raise e
 
+
 if __name__ == "__main__":
-    init_database()
+    # Provides clean, direct terminal invocation support
+    initialize_database()
