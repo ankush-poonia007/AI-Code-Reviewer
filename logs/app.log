@@ -1771,3 +1771,462 @@ sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) table review_executi
 2026-07-03 23:22:36 | INFO     | backend.database.init_db:initialize_database:9 - Initializing database schema...
 2026-07-03 23:22:36 | SUCCESS  | backend.database.init_db:initialize_database:13 - Database initialized successfully.
 2026-07-03 23:22:36 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:37:00 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:37:00 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:37:00 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:37:09 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:37:09 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:37:09 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:37:09 | INFO     | backend.api.v1.health:system_health_check:14 - API diagnostics request intercepted at version 1 checkpoint.
+2026-07-03 23:37:09 | INFO     | backend.api.v1.review:submit_code_review:28 - API Gate intercept [JSON]: Submitting code analysis for file 'test.py'
+2026-07-03 23:37:09 | INFO     | backend.services.review_service:review_code:52 - Initiating code review transaction block for file: test.py
+2026-07-03 23:37:09 | INFO     | backend.providers.groq_provider:generate_review:38 - Generating code review using Groq with model: llama-3.3-70b-versatile
+2026-07-03 23:37:11 | SUCCESS  | backend.services.review_service:review_code:87 - Code review transaction block completed and saved to disk for test.py.
+2026-07-03 23:37:18 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:37:18 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:37:18 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:00 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:40:03 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:40:03 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:40:03 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:03 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:40:03 | INFO     | backend.database.init_db:initialize_database:9 - Initializing database schema...
+2026-07-03 23:40:03 | SUCCESS  | backend.database.init_db:initialize_database:13 - Database initialized successfully.
+2026-07-03 23:40:03 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:40:06 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:40:06 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:40:06 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:06 | INFO     | backend.api.v1.review:submit_code_review:28 - API Gate intercept [JSON]: Submitting code analysis for file 'race.py'
+2026-07-03 23:40:06 | INFO     | backend.services.review_service:review_code:52 - Initiating code review transaction block for file: race.py
+2026-07-03 23:40:06 | INFO     | backend.providers.groq_provider:generate_review:38 - Generating code review using Groq with model: llama-3.3-70b-versatile
+2026-07-03 23:40:06 | INFO     | backend.api.v1.review:submit_code_review:28 - API Gate intercept [JSON]: Submitting code analysis for file 'race.py'
+2026-07-03 23:40:06 | INFO     | backend.services.review_service:review_code:52 - Initiating code review transaction block for file: race.py
+2026-07-03 23:40:12 | ERROR    | backend.api.exceptions:database_exception_handler:119 - Persistence transaction abort intercept: Relational storage engine crash.
+Traceback (most recent call last):
+
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    │    │       └ <function DefaultDialect.do_execute at 0x00000291A99CF480>
+    │    └ <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x00000291AB511550>
+    └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    │      │       │          └ ('race.py', 'PYTHON', 0.0, 'Initializing code analysis workflow...', 'PENDING', 0, 'c0f211dd-87dd-4516-a397-62fc800658e0', '2...
+    │      │       └ 'INSERT INTO reviews (filename, language, overall_score, executive_summary, status, review_duration_ms, id, created_at, updat...
+    │      └ <method 'execute' of 'sqlite3.Cursor' objects>
+    └ <sqlite3.Cursor object at 0x00000291AEBEB0C0>
+
+sqlite3.OperationalError: database is locked
+
+
+The above exception was the direct cause of the following exception:
+
+
+Traceback (most recent call last):
+
+  File "D:\PROJECTS\AI-Code-Reviewer\_audit_test.py", line 39, in <module>
+    asyncio.run(race_test())
+    │       │   └ <function race_test at 0x00000291A57EBAB0>
+    │       └ <function run at 0x00000291A7B4B110>
+    └ <module 'asyncio' from 'C:\\Users\\Ankush Poonia\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\asyncio\\__init__.py'>
+
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 204, in run
+    return runner.run(main)
+           │      │   └ <coroutine object race_test at 0x00000291AE919DF0>
+           │      └ <function Runner.run at 0x00000291A7B4B530>
+           └ <asyncio.runners.Runner object at 0x00000291AE8D12B0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\runners.py", line 127, in run
+    return self._loop.run_until_complete(task)
+           │    │     │                  └ <Task pending name='Task-1' coro=<race_test() running at D:\PROJECTS\AI-Code-Reviewer\_audit_test.py:28> wait_for=<_Gathering...
+           │    │     └ <function BaseEventLoop.run_until_complete at 0x00000291A7B43950>
+           │    └ <ProactorEventLoop running=True closed=False debug=False>
+           └ <asyncio.runners.Runner object at 0x00000291AE8D12B0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 706, in run_until_complete
+    self.run_forever()
+    │    └ <function BaseEventLoop.run_forever at 0x00000291A7B438A0>
+    └ <ProactorEventLoop running=True closed=False debug=False>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 677, in run_forever
+    self._run_once()
+    │    └ <function BaseEventLoop._run_once at 0x00000291A7B49A60>
+    └ <ProactorEventLoop running=True closed=False debug=False>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\base_events.py", line 2046, in _run_once
+    handle._run()
+    │      └ <function Handle._run at 0x00000291A7AB2090>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\asyncio\events.py", line 94, in _run
+    self._context.run(self._callback, *self._args)
+    │    │            │    │           │    └ <member '_args' of 'Handle' objects>
+    │    │            │    │           └ <Handle Task.task_wakeup()>
+    │    │            │    └ <member '_callback' of 'Handle' objects>
+    │    │            └ <Handle Task.task_wakeup()>
+    │    └ <member '_context' of 'Handle' objects>
+    └ <Handle Task.task_wakeup()>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1859, in post
+    return await self.request(
+                 │    └ <function AsyncClient.request at 0x00000291A802F740>
+                 └ <httpx.AsyncClient object at 0x00000291AE8D1940>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1540, in request
+    return await self.send(request, auth=auth, follow_redirects=follow_redirects)
+                 │    │    │             │                      └ <httpx._client.UseClientDefault object at 0x00000291A7EF6CF0>
+                 │    │    │             └ <httpx._client.UseClientDefault object at 0x00000291A7EF6CF0>
+                 │    │    └ <Request('POST', 'http://test/api/v1/review')>
+                 │    └ <function AsyncClient.send at 0x00000291A802FAB0>
+                 └ <httpx.AsyncClient object at 0x00000291AE8D1940>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1629, in send
+    response = await self._send_handling_auth(
+                     │    └ <function AsyncClient._send_handling_auth at 0x00000291A802FC10>
+                     └ <httpx.AsyncClient object at 0x00000291AE8D1940>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1657, in _send_handling_auth
+    response = await self._send_handling_redirects(
+                     │    └ <function AsyncClient._send_handling_redirects at 0x00000291A802FD70>
+                     └ <httpx.AsyncClient object at 0x00000291AE8D1940>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1694, in _send_handling_redirects
+    response = await self._send_single_request(request)
+                     │    │                    └ <Request('POST', 'http://test/api/v1/review')>
+                     │    └ <function AsyncClient._send_single_request at 0x00000291A802FED0>
+                     └ <httpx.AsyncClient object at 0x00000291AE8D1940>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_client.py", line 1730, in _send_single_request
+    response = await transport.handle_async_request(request)
+                     │         │                    └ <Request('POST', 'http://test/api/v1/review')>
+                     │         └ <function ASGITransport.handle_async_request at 0x00000291A800F3D0>
+                     └ <httpx.ASGITransport object at 0x00000291AE8D17F0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\httpx\_transports\asgi.py", line 170, in handle_async_request
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function ASGITransport.handle_async_request.<locals>.send at 0x00000291AE9FC460>
+          │    │   │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │    └ <fastapi.applications.FastAPI object at 0x00000291AB5F8AD0>
+          └ <httpx.ASGITransport object at 0x00000291AE8D17F0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\fastapi\applications.py", line 1159, in __call__
+    await super().__call__(scope, receive, send)
+                           │      │        └ <function ASGITransport.handle_async_request.<locals>.send at 0x00000291AE9FC460>
+                           │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+                           └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\applications.py", line 90, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function ASGITransport.handle_async_request.<locals>.send at 0x00000291AE9FC460>
+          │    │                │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │    └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000291AE8D2A50>
+          └ <fastapi.applications.FastAPI object at 0x00000291AB5F8AD0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\middleware\errors.py", line 164, in __call__
+    await self.app(scope, receive, _send)
+          │    │   │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000291AE9FC5C0>
+          │    │   │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │    └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000291AE8D2900>
+          └ <starlette.middleware.errors.ServerErrorMiddleware object at 0x00000291AE8D2A50>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\middleware\exceptions.py", line 63, in __call__
+    await wrap_app_handling_exceptions(self.app, conn)(scope, receive, send)
+          │                            │    │    │     │      │        └ <function ServerErrorMiddleware.__call__.<locals>._send at 0x00000291AE9FC5C0>
+          │                            │    │    │     │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │                            │    │    │     └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │                            │    │    └ <starlette.requests.Request object at 0x00000291AE973B10>
+          │                            │    └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000291AE8D27B0>
+          │                            └ <starlette.middleware.exceptions.ExceptionMiddleware object at 0x00000291AE8D2900>
+          └ <function wrap_app_handling_exceptions at 0x00000291ABA16B90>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FC880>
+          │   │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000291AE8D27B0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\fastapi\middleware\asyncexitstack.py", line 18, in __call__
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FC880>
+          │    │   │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │    └ <fastapi.routing.APIRouter object at 0x00000291AE9196E0>
+          └ <fastapi.middleware.asyncexitstack.AsyncExitStackMiddleware object at 0x00000291AE8D27B0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\routing.py", line 660, in __call__
+    await self.middleware_stack(scope, receive, send)
+          │    │                │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FC880>
+          │    │                │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │    │                └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │    └ <bound method Router.app of <fastapi.routing.APIRouter object at 0x00000291AE9196E0>>
+          └ <fastapi.routing.APIRouter object at 0x00000291AE9196E0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\routing.py", line 680, in app
+    await route.handle(scope, receive, send)
+          │     │      │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FC880>
+          │     │      │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │     │      └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │     └ <function Route.handle at 0x00000291ABA416F0>
+          └ APIRoute(path='/api/v1/review', name='submit_code_review', methods=['POST'])
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\routing.py", line 276, in handle
+    await self.app(scope, receive, send)
+          │    │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FC880>
+          │    │   │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │    │   └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │    └ <function request_response.<locals>.app at 0x00000291AE93BAB0>
+          └ APIRoute(path='/api/v1/review', name='submit_code_review', methods=['POST'])
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\fastapi\routing.py", line 134, in app
+    await wrap_app_handling_exceptions(app, request)(scope, receive, send)
+          │                            │    │        │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FC880>
+          │                            │    │        │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │                            │    │        └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          │                            │    └ <starlette.requests.Request object at 0x00000291AE91A650>
+          │                            └ <function request_response.<locals>.app.<locals>.app at 0x00000291AE9FC9E0>
+          └ <function wrap_app_handling_exceptions at 0x00000291ABA16B90>
+> File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\starlette\_exception_handler.py", line 42, in wrapped_app
+    await app(scope, receive, sender)
+          │   │      │        └ <function wrap_app_handling_exceptions.<locals>.wrapped_app.<locals>.sender at 0x00000291AE9FCCA0>
+          │   │      └ <function ASGITransport.handle_async_request.<locals>.receive at 0x00000291AE979170>
+          │   └ {'type': 'http', 'asgi': {'version': '3.0'}, 'http_version': '1.1', 'method': 'POST', 'headers': [(b'host', b'test'), (b'acce...
+          └ <function request_response.<locals>.app.<locals>.app at 0x00000291AE9FC9E0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\fastapi\routing.py", line 120, in app
+    response = await f(request)
+                     │ └ <starlette.requests.Request object at 0x00000291AE91A650>
+                     └ <function get_request_handler.<locals>.app at 0x00000291AE93B950>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\fastapi\routing.py", line 674, in app
+    raw_response = await run_endpoint_function(
+                         └ <function run_endpoint_function at 0x00000291ABA46140>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\fastapi\routing.py", line 328, in run_endpoint_function
+    return await dependant.call(**values)
+                 │         │      └ {'review_service': <backend.services.review_service.ReviewService object at 0x00000291AEA7EE90>, 'payload': ReviewRequest(fil...
+                 │         └ <function submit_code_review at 0x00000291AE8005C0>
+                 └ Dependant(path_params=[], query_params=[], header_params=[], cookie_params=[], body_params=[ModelField(field_info=Body(Pydant...
+
+  File "D:\PROJECTS\AI-Code-Reviewer\backend\api\v1\review.py", line 31, in submit_code_review
+    parsed_result = await review_service.review_code(
+                          │              └ <function ReviewService.review_code at 0x00000291AE7FB740>
+                          └ <backend.services.review_service.ReviewService object at 0x00000291AEA7EE90>
+
+  File "D:\PROJECTS\AI-Code-Reviewer\backend\services\review_service.py", line 58, in review_code
+    review_record = self._create_review(filename=filename, language=language)
+                    │    │                       │                  └ 'python'
+                    │    │                       └ 'race.py'
+                    │    └ <function ReviewService._create_review at 0x00000291AE7FBAB0>
+                    └ <backend.services.review_service.ReviewService object at 0x00000291AEA7EE90>
+
+  File "D:\PROJECTS\AI-Code-Reviewer\backend\services\review_service.py", line 114, in _create_review
+    return self.review_repo.create(review_entity)
+           │    │           │      └ <backend.models.review.Review object at 0x00000291AEC302D0>
+           │    │           └ <function ReviewRepository.create at 0x00000291ABAC6CF0>
+           │    └ <backend.database.repositories.review_repository.ReviewRepository object at 0x00000291AEA7EAD0>
+           └ <backend.services.review_service.ReviewService object at 0x00000291AEA7EE90>
+
+  File "D:\PROJECTS\AI-Code-Reviewer\backend\database\repositories\review_repository.py", line 23, in create
+    self.db.flush()
+    │    │  └ <function Session.flush at 0x00000291A9D63A00>
+    │    └ <sqlalchemy.orm.session.Session object at 0x00000291AEA05450>
+    └ <backend.database.repositories.review_repository.ReviewRepository object at 0x00000291AEA7EAD0>
+
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\session.py", line 4353, in flush
+    self._flush(objects)
+    │    │      └ None
+    │    └ <function Session._flush at 0x00000291A9D63E20>
+    └ <sqlalchemy.orm.session.Session object at 0x00000291AEA05450>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\session.py", line 4488, in _flush
+    with util.safe_reraise():
+         │    └ <class 'sqlalchemy.util.langhelpers.safe_reraise'>
+         └ <module 'sqlalchemy.util' from 'C:\\Users\\Ankush Poonia\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\sql...
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\util\langhelpers.py", line 122, in __exit__
+    raise exc_value.with_traceback(exc_tb)
+          │         │              └ <traceback object at 0x00000291AEC40EC0>
+          │         └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(sqlite3.OperationalError) database is locked')
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\session.py", line 4449, in _flush
+    flush_context.execute()
+    │             └ <function UOWTransaction.execute at 0x00000291A9CC61F0>
+    └ <sqlalchemy.orm.unitofwork.UOWTransaction object at 0x00000291AEC30410>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 465, in execute
+    rec.execute(self)
+    │   │       └ <sqlalchemy.orm.unitofwork.UOWTransaction object at 0x00000291AEC30410>
+    │   └ <function SaveUpdateAll.execute at 0x00000291A9CC6DA0>
+    └ SaveUpdateAll(Mapper[Review(reviews)])
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\unitofwork.py", line 641, in execute
+    util.preloaded.orm_persistence.save_obj(
+    │    │         │               └ <function save_obj at 0x00000291A9CEF8A0>
+    │    │         └ <module 'sqlalchemy.orm.persistence' from 'C:\\Users\\Ankush Poonia\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-pa...
+    │    └ <module 'sqlalchemy.util.preloaded' from 'C:\\Users\\Ankush Poonia\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-pac...
+    └ <module 'sqlalchemy.util' from 'C:\\Users\\Ankush Poonia\\AppData\\Local\\Python\\pythoncore-3.14-64\\Lib\\site-packages\\sql...
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\persistence.py", line 94, in save_obj
+    _emit_insert_statements(
+    └ <function _emit_insert_statements at 0x00000291A9D38930>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\orm\persistence.py", line 1234, in _emit_insert_statements
+    result = connection.execute(
+             │          └ <function Connection.execute at 0x00000291A98D3110>
+             └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1421, in execute
+    return meth(
+           └ <bound method ClauseElement._execute_on_connection of <sqlalchemy.sql.dml.Insert object at 0x00000291AE9BBB60>>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\sql\elements.py", line 526, in _execute_on_connection
+    return connection._execute_clauseelement(
+           │          └ <function Connection._execute_clauseelement at 0x00000291A98D37F0>
+           └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1643, in _execute_clauseelement
+    ret = self._execute_context(
+          │    └ <function Connection._execute_context at 0x00000291A98D3C10>
+          └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1848, in _execute_context
+    return self._exec_single_context(
+           │    └ <function Connection._exec_single_context at 0x00000291A98D3D70>
+           └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1988, in _exec_single_context
+    self._handle_dbapi_exception(
+    │    └ <function Connection._handle_dbapi_exception at 0x00000291A98D43B0>
+    └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 2365, in _handle_dbapi_exception
+    raise sqlalchemy_exception.with_traceback(exc_info[2]) from e
+          │                    │              │                 └ OperationalError('database is locked')
+          │                    │              └ (<class 'sqlite3.OperationalError'>, OperationalError('database is locked'), <traceback object at 0x00000291AEC40B80>)
+          │                    └ <method 'with_traceback' of 'BaseException' objects>
+          └ OperationalError('(sqlite3.OperationalError) database is locked')
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\base.py", line 1969, in _exec_single_context
+    self.dialect.do_execute(
+    │    │       └ <function DefaultDialect.do_execute at 0x00000291A99CF480>
+    │    └ <sqlalchemy.dialects.sqlite.pysqlite.SQLiteDialect_pysqlite object at 0x00000291AB511550>
+    └ <sqlalchemy.engine.base.Connection object at 0x00000291AEA67BB0>
+  File "C:\Users\Ankush Poonia\AppData\Local\Python\pythoncore-3.14-64\Lib\site-packages\sqlalchemy\engine\default.py", line 952, in do_execute
+    cursor.execute(statement, parameters)
+    │      │       │          └ ('race.py', 'PYTHON', 0.0, 'Initializing code analysis workflow...', 'PENDING', 0, 'c0f211dd-87dd-4516-a397-62fc800658e0', '2...
+    │      │       └ 'INSERT INTO reviews (filename, language, overall_score, executive_summary, status, review_duration_ms, id, created_at, updat...
+    │      └ <method 'execute' of 'sqlite3.Cursor' objects>
+    └ <sqlite3.Cursor object at 0x00000291AEBEB0C0>
+
+sqlalchemy.exc.OperationalError: (sqlite3.OperationalError) database is locked
+[SQL: INSERT INTO reviews (filename, language, overall_score, executive_summary, status, review_duration_ms, id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)]
+[parameters: ('race.py', 'PYTHON', 0.0, 'Initializing code analysis workflow...', 'PENDING', 0, 'c0f211dd-87dd-4516-a397-62fc800658e0', '2026-07-03 18:10:06.797930', '2026-07-03 18:10:06.797935')]
+(Background on this error at: https://sqlalche.me/e/20/e3q8)
+2026-07-03 23:40:13 | SUCCESS  | backend.services.review_service:review_code:87 - Code review transaction block completed and saved to disk for race.py.
+2026-07-03 23:40:36 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:40:38 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:40:38 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:40:38 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:38 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:40:38 | INFO     | backend.database.init_db:initialize_database:9 - Initializing database schema...
+2026-07-03 23:40:38 | SUCCESS  | backend.database.init_db:initialize_database:13 - Database initialized successfully.
+2026-07-03 23:40:38 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:40:50 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:40:52 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:40:52 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:40:52 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:52 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:40:52 | INFO     | backend.database.init_db:initialize_database:9 - Initializing database schema...
+2026-07-03 23:40:52 | SUCCESS  | backend.database.init_db:initialize_database:13 - Database initialized successfully.
+2026-07-03 23:40:52 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:40:52 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:40:54 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:40:54 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:40:54 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:54 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:40:54 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:40:54 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:40:54 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:40:56 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:40:56 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:40:56 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:40:56 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:40:56 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:40:56 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:40:56 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:40:58 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:41:00 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:00 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:00 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:00 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:00 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:41:00 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:41:00 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:02 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:02 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:02 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:02 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:02 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:41:02 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:41:02 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:05 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:41:07 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:07 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:07 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:07 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:07 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:41:07 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:41:07 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:09 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:41:11 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:11 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:11 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:11 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:11 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:41:11 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:41:11 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:13 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:13 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:13 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:13 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:13 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:41:13 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:41:13 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:23 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:41:26 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:26 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:26 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:26 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:26 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:41:26 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:41:26 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:28 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:28 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:28 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:28 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:41:28 | INFO     | backend.database.init_db:initialize_database:10 - Initializing the database schema...
+2026-07-03 23:41:28 | SUCCESS  | backend.database.init_db:initialize_database:17 - Database initialized successfully.
+2026-07-03 23:41:28 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:41:31 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:31 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:31 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:41 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:41:41 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:41:41 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:41:41 | INFO     | backend.api.v1.review:submit_code_review:29 - API Gate intercept [JSON]: Submitting code analysis for file 'fix_test.py'
+2026-07-03 23:41:41 | INFO     | backend.services.review_service:review_code:55 - Initiating code review transaction block for file: fix_test.py
+2026-07-03 23:41:41 | INFO     | backend.providers.groq_provider:generate_review:38 - Generating code review using Groq with model: llama-3.3-70b-versatile
+2026-07-03 23:41:43 | SUCCESS  | backend.services.review_service:review_code:90 - Code review transaction block completed and saved to disk for fix_test.py.
+2026-07-03 23:42:37 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:42:37 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:42:37 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:49:43 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:49:45 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:49:45 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:49:45 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:49:45 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:49:45 | INFO     | backend.database.init_db:initialize_database:10 - Initializing the database schema...
+2026-07-03 23:49:45 | SUCCESS  | backend.database.init_db:initialize_database:17 - Database initialized successfully.
+2026-07-03 23:49:45 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:49:47 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:49:47 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:49:47 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:49:48 | INFO     | backend.api.v1.review:submit_code_review:29 - API Gate intercept [JSON]: Submitting code analysis for file 'verify.py'
+2026-07-03 23:49:48 | INFO     | backend.services.review_service:review_code:55 - Initiating code review transaction block for file: verify.py
+2026-07-03 23:49:48 | INFO     | backend.providers.gemini_provider:generate_review:41 - Dispatching async request to Gemini API using model: gemini-2.5-flash
+2026-07-03 23:50:05 | INFO     | backend.main:lifespan:34 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-03 23:50:05 | SUCCESS  | backend.services.review_service:review_code:90 - Code review transaction block completed and saved to disk for verify.py.
+2026-07-03 23:50:07 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:50:07 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:50:07 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:50:07 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:50:07 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:50:07 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:50:07 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:50:09 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:50:09 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:50:09 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:50:09 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:50:09 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:50:09 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:50:09 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:50:11 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:50:11 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:50:11 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:50:11 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:50:11 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:50:11 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:50:11 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.
+2026-07-03 23:50:13 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 23:50:13 | INFO     | backend.main:<module>:42 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-03 23:50:13 | SUCCESS  | backend.main:<module>:70 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-03 23:50:13 | INFO     | backend.main:lifespan:23 - Server lifecycles initializing: Executing startup hooks...
+2026-07-03 23:50:13 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-03 23:50:13 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-03 23:50:13 | SUCCESS  | backend.main:lifespan:27 - Application database bootstrap hook completed successfully.

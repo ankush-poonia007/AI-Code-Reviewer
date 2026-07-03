@@ -1,38 +1,23 @@
 from abc import ABC, abstractmethod
 from backend.providers.response_models import LLMResponse
+from backend.providers.exceptions import (
+    LLMProviderError,
+    LLMAuthenticationError,
+    LLMRateLimitError,
+    LLMTimeoutError,
+    LLMProviderUnavailableError,
+)
+
+__all__ = [
+    "LLMProvider",
+    "LLMProviderError",
+    "LLMAuthenticationError",
+    "LLMRateLimitError",
+    "LLMTimeoutError",
+    "LLMProviderUnavailableError",
+]
 
 
-# =====================================================================
-# 1️⃣ Core Exception Taxonomy
-# =====================================================================
-class LLMProviderError(Exception):
-    """Base application domain exception for all AI provider-layer operational failures."""
-    pass
-
-
-class LLMAuthenticationError(LLMProviderError):
-    """Raised when vendor API credential authentication fails (e.g., HTTP 401)."""
-    pass
-
-
-class LLMRateLimitError(LLMProviderError):
-    """Raised when hitting third-party execution or quota throttling limits (e.g., HTTP 429)."""
-    pass
-
-
-class LLMTimeoutError(LLMProviderError):
-    """Raised when network latency exceeds client connection boundaries."""
-    pass
-
-
-class LLMProviderUnavailableError(LLMProviderError):
-    """Raised when remote endpoints are unreachable due to DNS failures or maintenance."""
-    pass
-
-
-# =====================================================================
-# 2️⃣ The Abstract Provider Contract (ABC)
-# =====================================================================
 class LLMProvider(ABC):
     """
     Abstract Base Class outlining the mandatory contract for hot-swappable AI engines.

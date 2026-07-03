@@ -44,10 +44,13 @@ class ReviewService:
         self.prompt_builder = prompt_builder
         self._logger = logger.bind(component="review_service")
 
-    async def review_code(self, filename: str, language: str, source_code: str) -> ParsedReviewResult:
+    async def review_code(self, filename: str, language: str, source_code: str) -> tuple[str, ParsedReviewResult]:
         """
         Primary public method orchestrating the end-to-end AI code review pipeline.
         Maintains an atomic transaction checkpoint, ensuring full rollback or audited status tracking.
+
+        Returns:
+            A tuple of (review_id, parsed_result) for the completed review transaction.
         """
         self._logger.info(f"Initiating code review transaction block for file: {filename}")
         
@@ -85,8 +88,8 @@ class ReviewService:
             self.db.commit()
             
             self._logger.success(f"Code review transaction block completed and saved to disk for {filename}.")
-            
-            return parsed_result
+
+            return str(review_record.id), parsed_result
 
         except Exception as e:
             # Boundary Interceptor: Rollback any partially flushed transaction steps cleanly

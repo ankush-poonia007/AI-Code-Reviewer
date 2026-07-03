@@ -1,54 +1,24 @@
-# Virtual Environment
+# =====================================================================
+# 1?? Python Ecosystem Cache & Compiled Assets
+# =====================================================================
+__pycache__/
+*.py[cod]
+*.class
+*.so
+.Python
+*.egg-info/
+.installed.cfg
+*.egg
+.pytest_cache/
+.mypy_cache/
+
+# =====================================================================
+# 2?? Virtual Environments & Dependencies
+# =====================================================================
 .venv/
 venv/
 ENV/
-
-# Python Cache
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
-.pytest_cache/
-
-# Environment Variables / Secrets
-.env
-.env.local
-
-# SQLite Database
-*.sqlite3
-*.db
-
-# Application Specific Uploads & Reports
-uploads/
-reports/
-
-# IDE Settings
-.vscode/
-.idea/
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.swp
-
-# Personal File
-notes.txt
-
-# Create an empty .gitignore file at the root of the project
-New-Item -ItemType File -Force -Path .gitignore
-
-# Populate it with strict python, virtual environment, credentials, and database exclusions
-Set-Content -Path .gitignore -Value @"
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
+env/
 build/
 develop-eggs/
 dist/
@@ -63,22 +33,43 @@ var/
 wheels/
 share/
 python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
 
-# Virtual Environments
-.venv/
-venv/
-ENV/
-env/
-
-# Environment configurations and secret credentials keys
+# =====================================================================
+# 3?? Environment Variables, Credentials & Secret Keys
+# =====================================================================
 .env
 .env.*
+.env.local
 secrets.json
+*.pem
+*.key
 
-# Local persistent SQLite database storage cache file engines
+# =====================================================================
+# 4?? Database Storage Engines & Persistent Caches
+# =====================================================================
 *.db
 *.sqlite3
-"@
+
+# =====================================================================
+# 5?? Application-Specific Uploads & Reports Directories
+# =====================================================================
+uploads/
+reports/
+
+# =====================================================================
+# 6?? Integrated Development Environment (IDE) Workspace Settings
+# =====================================================================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# =====================================================================
+# 7?? Personal Workspaces & Scratch Files
+# =====================================================================
+notes.txt
+todo.md
+scratch/

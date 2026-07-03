@@ -1,5 +1,6 @@
 from loguru import logger
 from backend.database import Base, engine
+import backend.models  # noqa: F401 — register ORM tables with Base.metadata before create_all
 
 def initialize_database() -> None:
     """

@@ -1,8 +1,9 @@
-from fastapi import APIRouter, Depends, status, UploadFile, File, Form, HTTPException
+from fastapi import APIRouter, Depends, status, UploadFile, File, Form
 from loguru import logger
 
 from backend.schemas.review_request import ReviewRequest
 from backend.schemas.review_response import ReviewResponse
+from backend.models.enums import ReviewStatusEnum
 from backend.api.dependencies import get_review_service
 from backend.services.review_service import ReviewService
 
@@ -28,26 +29,16 @@ async def submit_code_review(
     logger.info(f"API Gate intercept [JSON]: Submitting code analysis for file '{payload.filename}'")
 
     # Dispatch parameters straight down to the injected workflow orchestrator
-    parsed_result = await review_service.review_code(
+    review_id, parsed_result = await review_service.review_code(
         filename=payload.filename,
         language=payload.language,
         source_code=payload.source_code
     )
 
-    # Safely fetch the most recent completed review record from database memory using instance repositories
-    historical_records = review_service.review_repo.list_all(skip=0, limit=1)
-    if not historical_records:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Transaction anomaly: Core review log could not be located inside database records."
-        )
-    
-    review_record = historical_records[0]
-
     # Map across the API response schema boundary (ADR-039)
     return ReviewResponse(
-        review_id=str(review_record.id),
-        status=review_record.status.value,
+        review_id=review_id,
+        status=ReviewStatusEnum.COMPLETED.value,
         overall_score=parsed_result.overall_score,
         executive_summary=parsed_result.executive_summary,
         issues=parsed_result.issues
@@ -80,27 +71,16 @@ async def upload_file_review(
     source_code = file_bytes.decode("utf-8")
 
     # 2. Dispatch extracted parameters straight down to the same injected workflow orchestrator
-    parsed_result = await review_service.review_code(
+    review_id, parsed_result = await review_service.review_code(
         filename=filename,
         language=language,
         source_code=source_code
     )
 
-    # 3. Safely fetch the most recent completed review record from database memory using instance repositories
-    # This matches Route A exactly to solve the too many values to unpack error
-    historical_records = review_service.review_repo.list_all(skip=0, limit=1)
-    if not historical_records:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Transaction anomaly: Core review log could not be located inside database records."
-        )
-    
-    review_record = historical_records[0]
-
-    # 4. Map across the API response schema boundary (ADR-039)
+    # 3. Map across the API response schema boundary (ADR-039)
     return ReviewResponse(
-        review_id=str(review_record.id),
-        status=review_record.status.value,
+        review_id=review_id,
+        status=ReviewStatusEnum.COMPLETED.value,
         overall_score=parsed_result.overall_score,
         executive_summary=parsed_result.executive_summary,
         issues=parsed_result.issues

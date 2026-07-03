@@ -75,8 +75,8 @@ class Settings(BaseSettings):
         provider = self.LLM_PROVIDER.lower()
         if provider == "groq" and (not self.GROQ_API_KEY or "your_actual" in self.GROQ_API_KEY):
             raise ValueError("\n[CONFIG CRITICAL] GROQ_API_KEY is missing or unconfigured in your .env file.")
-        elif provider == "gemini" and (not self.GOOGLE_API_KEY or "your_actual" in self.GOOGLE_API_KEY):
-            raise ValueError("\n[CONFIG CRITICAL] GOOGLE_API_KEY is missing or unconfigured in your .env file.")
+        elif provider == "gemini" and (not self.GEMINI_API_KEY or "your_actual" in self.GEMINI_API_KEY):
+            raise ValueError("\n[CONFIG CRITICAL] GEMINI_API_KEY is missing or unconfigured in your .env file.")
 
 # Instantiate a single, global settings instance for system-wide consumption
 settings = Settings()

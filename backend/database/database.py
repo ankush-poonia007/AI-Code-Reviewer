@@ -8,5 +8,5 @@ DATABASE_URL = settings.DATABASE_URL
 # connect_args is mandatory for SQLite to prevent cross-thread exceptions during API routing
 engine = create_engine(
     DATABASE_URL,
-    connect_args={"check_same_thread": False} if DATABASE_URL.startswith("sqlite") else {}
+    connect_args={"check_same_thread": False, "timeout": 30} if DATABASE_URL.startswith("sqlite") else {}
 )
