@@ -1,0 +1,12 @@
+2026-07-03 11:49:35 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 11:49:35 | INFO     | backend.main:<module>:12 - Booting up AI Code Review Assistant Framework (v1.0.0)...
+2026-07-03 11:49:35 | DEBUG    | backend.main:<module>:13 - Runtime parameters: Host=127.0.0.1, Port=8000, Debug=True
+2026-07-03 11:49:35 | SUCCESS  | backend.main:<module>:28 - FastAPI application instance constructed and loaded safely.
+2026-07-03 12:07:55 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 12:07:55 | INFO     | backend.main:<module>:12 - Booting up AI Code Review Assistant Framework (v1.0.0)...
+2026-07-03 12:07:55 | DEBUG    | backend.main:<module>:13 - Runtime parameters: Host=127.0.0.1, Port=8000, Debug=True
+2026-07-03 12:07:55 | SUCCESS  | backend.main:<module>:28 - FastAPI application instance constructed and loaded safely.
+2026-07-03 12:08:34 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-03 12:08:34 | INFO     | backend.main:<module>:12 - Booting up AI Code Review Assistant Framework (v1.0.0)...
+2026-07-03 12:08:34 | DEBUG    | backend.main:<module>:13 - Runtime parameters: Host=127.0.0.1, Port=8000, Debug=True
+2026-07-03 12:08:34 | SUCCESS  | backend.main:<module>:28 - FastAPI application instance constructed and loaded safely.
