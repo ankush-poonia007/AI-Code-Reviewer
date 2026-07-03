@@ -1,20 +1,31 @@
 from typing import Optional
+from uuid import UUID
 from sqlalchemy.orm import Session
-from backend.models import ReviewExecution
+from backend.models.review_execution import ReviewExecution
 
 class ExecutionRepository:
     """
-    Isolated data access gateway managing persistent storage of LLM engine runtime telemetry metrics.
+    Isolated data access gateway managing persistent CRUD actions for ReviewExecution logs.
+    Communicates exclusively with SQLAlchemy; uses instance-based sessions.
     """
-    @staticmethod
-    def create(db: Session, execution_instance: ReviewExecution) -> ReviewExecution:
-        """Stores structural AI orchestrator processing timings and parameters."""
-        db.add(execution_instance)
-        db.commit()
-        db.refresh(execution_instance)
-        return execution_instance
 
-    @staticmethod
-    def get_by_review_id(db: Session, review_id: str) -> Optional[ReviewExecution]:
-        """Retrieves execution metrics for a specific review, enforcing the 1:1 relation boundary."""
-        return db.query(ReviewExecution).filter(ReviewExecution.review_id == review_id).first()
+    def __init__(self, db: Session) -> None:
+        """Initializes the repository with an active SQLAlchemy session."""
+        self.db = db
+
+    def create(self, execution: ReviewExecution) -> ReviewExecution:
+        """
+        Persists runtime AI metrics and provider execution profiles to the database.
+        Note: Commit is handled by the calling service to support transaction boundaries.
+        """
+        self.db.add(execution)
+        # Flush pending changes to the database while keeping the transaction open.
+        self.db.flush()
+        return execution
+
+    def get_by_review_id(self, review_id: UUID) -> Optional[ReviewExecution]:
+        """
+        Retrieves the exact 1:1 execution tracking telemetry mapped to a specific review.
+        """
+        id_str = str(review_id)
+        return self.db.query(ReviewExecution).filter(ReviewExecution.review_id == id_str).first()
