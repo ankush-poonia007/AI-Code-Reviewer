@@ -1,6 +1,7 @@
-from fastapi import APIRouter, Depends, status, UploadFile, File, Form
+from fastapi import APIRouter, Depends, status, UploadFile, File, Form, HTTPException
 from loguru import logger
 
+from backend.config import settings
 from backend.schemas.review_request import ReviewRequest
 from backend.schemas.review_response import ReviewResponse
 from backend.models.enums import ReviewStatusEnum
@@ -68,7 +69,19 @@ async def upload_file_review(
     # 1. Defensively extract filename and decode binary file stream data into a clean string string
     filename = file.filename if file.filename else "uploaded_asset.txt"
     file_bytes = await file.read()
-    source_code = file_bytes.decode("utf-8")
+    max_bytes = settings.MAX_FILE_SIZE_MB * 1024 * 1024
+    if len(file_bytes) > max_bytes:
+        raise HTTPException(
+            status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+            detail=f"Uploaded file exceeds the maximum allowed size of {settings.MAX_FILE_SIZE_MB} MB."
+        )
+    try:
+        source_code = file_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Uploaded file is not valid UTF-8 text. Please upload a plain-text source file."
+        )
 
     # 2. Dispatch extracted parameters straight down to the same injected workflow orchestrator
     review_id, parsed_result = await review_service.review_code(

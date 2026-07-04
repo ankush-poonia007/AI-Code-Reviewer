@@ -39,6 +39,7 @@ python-wheels/
 # =====================================================================
 .env
 .env.*
+!.env.example
 .env.local
 secrets.json
 *.pem

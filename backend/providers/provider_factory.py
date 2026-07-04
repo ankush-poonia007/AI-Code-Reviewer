@@ -17,13 +17,16 @@ class ProviderFactory:
         "gemini": GeminiProvider
     }
 
+    # Application-scoped singleton instances keyed by provider name
+    _instances: Dict[str, LLMProvider] = {}
+
     @classmethod
     def get_provider(cls) -> LLMProvider:
         """
-        Dynamically looks up and instantiates the active AI provider based on environment settings.
+        Dynamically looks up and returns the active AI provider singleton based on environment settings.
         
         Returns:
-            An instantiated concrete implementation of the LLMProvider base class.
+            An application-scoped concrete implementation of the LLMProvider base class.
             
         Raises:
             LLMProviderError: If the configured provider string is missing from the registry mapping.
@@ -42,5 +45,7 @@ class ProviderFactory:
                 f"Please update your environment settings to target one of: {supported_options}"
             )
 
-        # Lazy Instantiation occurs exactly on-demand right here
-        return provider_class()
+        if active_provider_key not in cls._instances:
+            cls._instances[active_provider_key] = provider_class()
+
+        return cls._instances[active_provider_key]

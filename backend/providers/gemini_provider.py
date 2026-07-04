@@ -22,7 +22,10 @@ class GeminiProvider(LLMProvider):
     def __init__(self) -> None:
         """Initializes the underlying async client using variables from config.py."""
         # Using the standard modern client wrapper initialized explicitly via API key parameters
-        self._client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        self._client = genai.Client(
+            api_key=settings.GEMINI_API_KEY,
+            http_options=genai.types.HttpOptions(timeout=settings.LLM_REQUEST_TIMEOUT_SECONDS * 1000),
+        )
         self._model_name = settings.GEMINI_MODEL
         # Structured log contextualization binding following identical Groq patterns
         self._logger = logger.bind(provider="gemini", component="provider")

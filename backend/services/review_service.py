@@ -96,8 +96,8 @@ class ReviewService:
             self._logger.error(f"Pipeline failure encountered. Initiating rollback and updating audit trail: {str(e)}")
             self.db.rollback()
             
-            # Audited Failure Recovery Layer: Persist a FAILED state tracking log safely to disk
-            self._finalize_failed_review(review_uuid, e)
+            # Audited Failure Recovery Layer: Persist a FAILED state via isolated audit transaction
+            self._finalize_failed_review(review_record, e)
                 
             # Pure raise statement preserves original traceback history cleanly for debugging
             raise
@@ -181,28 +181,31 @@ class ReviewService:
         review_record.overall_score = parsed_result.overall_score
         review_record.status = ReviewStatusEnum.COMPLETED
         review_record.review_duration_ms = duration_ms
-        self.db.flush()
+        self.review_repo.update(review_record)
 
-    def _finalize_failed_review(self, review_id: UUID, exception: Exception) -> None:
+    def _finalize_failed_review(self, review_record: Review, exception: Exception) -> None:
         """
-        Safely re-fetches and transitions the active tracking footprint to a clean FAILED state.
-        Bypasses nested savepoint complexity by modifying the entity directly on a clear transaction.
+        Persists a FAILED audit record in an isolated transaction after the main
+        workflow transaction has been rolled back, preserving atomic boundaries.
         """
+        review_id = review_record.id
         try:
-            # Re-fetch the tracking entity safely using the instance-based repository API
-            review_record = self.review_repo.get_by_id(review_id)
-            if review_record:
-                review_record.status = ReviewStatusEnum.FAILED
-                review_record.executive_summary = (
+            failed_review = Review(
+                id=review_id,
+                filename=review_record.filename,
+                language=review_record.language,
+                executive_summary=(
                     "Code analysis failed due to an underlying execution error. "
                     "Please check infrastructure logs for diagnostic details."
-                )
-                self.db.commit()
-            
-            # Print complete technical traceback variables out to your Loguru files
+                ),
+                status=ReviewStatusEnum.FAILED,
+                review_duration_ms=0,
+                overall_score=0.00,
+            )
+            ReviewRepository.persist_in_isolated_transaction(failed_review)
+
             stack_trace = "".join(traceback.format_exception(type(exception), exception, exception.__traceback__))
             self._logger.warning(f"Audit log updated to FAILED state for review: {review_id}\nInternal Trace:\n{stack_trace}")
-            
+
         except Exception as audit_err:
             self._logger.critical(f"Critical System Failure: Could not commit failure status to database: {str(audit_err)}")
-            self.db.rollback()

@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     # ==========================================
     APP_NAME: str = Field(default="AI Code Review Assistant")
     APP_VERSION: str = Field(default="1.0.0")
-    DEBUG: bool = Field(default=True)
+    DEBUG: bool = Field(default=False)
     HOST: str = Field(default="127.0.0.1")
     PORT: int = Field(default=8000)
 
@@ -34,6 +34,7 @@ class Settings(BaseSettings):
     LLM_PROVIDER: str = Field(default="groq")  # Supported: "groq", "gemini", "ollama"
     MAX_TOKENS: int = Field(default=4096)
     TEMPERATURE: float = Field(default=0.2)
+    LLM_REQUEST_TIMEOUT_SECONDS: int = Field(default=120)
 
     # Individual Ecosystem API Target Tokens & Models
     GROQ_API_KEY: str = Field(default="")

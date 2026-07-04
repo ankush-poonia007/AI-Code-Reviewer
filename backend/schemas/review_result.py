@@ -1,6 +1,9 @@
-from typing import List, Optional
-from pydantic import BaseModel, Field, confloat, ConfigDict
+from typing import List, Optional, Annotated
+from pydantic import BaseModel, Field, ConfigDict
 from backend.constants import ReviewCategory, ReviewSeverity
+
+ScoreFloat = Annotated[float, Field(ge=0.0, le=100.0)]
+ConfidenceFloat = Annotated[float, Field(ge=0.0, le=1.0)]
 
 class ParsedIssue(BaseModel):
     """
@@ -17,7 +20,7 @@ class ParsedIssue(BaseModel):
     recommendation: str = Field(description="An actionable, step-by-step resolution remediation fix.")
     code_snippet: Optional[str] = Field(default=None, description="The direct matching block of problematic code.")
     line_number: Optional[int] = Field(default=None, description="Target line number inside the code asset file.")
-    confidence: Optional[confloat(ge=0.0, le=1.0)] = Field(default=1.0, description="Confidence metric bounded tightly between 0.0 and 1.0.")
+    confidence: Optional[ConfidenceFloat] = Field(default=1.0, description="Confidence metric bounded tightly between 0.0 and 1.0.")
 
 
 class ParsedReviewResult(BaseModel):
@@ -27,6 +30,6 @@ class ParsedReviewResult(BaseModel):
     # Enforce strict property validation to block structural hallucinations
     model_config = ConfigDict(extra="forbid")
 
-    overall_score: confloat(ge=0.0, le=100.0) = Field(description="Deterministic quality metric grade bounded tightly between 0.0 and 100.0.")
+    overall_score: ScoreFloat = Field(description="Deterministic quality metric grade bounded tightly between 0.0 and 100.0.")
     executive_summary: str = Field(description="High-level markdown or text summary of the code quality analysis.")
     issues: List[ParsedIssue] = Field(default_factory=list, description="Collection of granular isolated software flaws discovered.")

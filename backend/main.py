@@ -1,6 +1,7 @@
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 
 from backend.config import settings
@@ -22,6 +23,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """
     logger.info("Server lifecycles initializing: Executing startup hooks...")
     try:
+        settings.verify_active_credentials()
+        logger.success("Active LLM provider credentials verified.")
         # Automate database schema footprint checks cleanly on actual server boot
         initialize_database()
         logger.success("Application database bootstrap hook completed successfully.")
@@ -59,6 +62,14 @@ app = FastAPI(
 
 # Bind global domain exception translation middleware framework matrix
 setup_exception_handlers(app)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Mount the structural, isolated route controller domains
 # Root level health verification gateway

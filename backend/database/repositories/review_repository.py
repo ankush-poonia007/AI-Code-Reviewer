@@ -3,6 +3,7 @@ from uuid import UUID
 from sqlalchemy.orm import Session
 from backend.models.review import Review
 from backend.models.enums import ReviewStatusEnum
+from backend.database.session import SessionLocal
 
 class ReviewRepository:
     """
@@ -46,6 +47,27 @@ class ReviewRepository:
             review.status = status
             self.db.flush()
         return review
+
+    def update(self, review: Review) -> Review:
+        """
+        Persists in-memory mutations on a tracked review entity within the active transaction.
+        Note: Commit is handled by the calling service to support transaction boundaries.
+        """
+        self.db.flush()
+        return review
+
+    @staticmethod
+    def persist_in_isolated_transaction(review: Review) -> None:
+        """
+        Persists a review record in a standalone transaction.
+        Used for audit recovery after the primary workflow transaction has been rolled back.
+        """
+        db = SessionLocal()
+        try:
+            db.add(review)
+            db.commit()
+        finally:
+            db.close()
 
     def delete(self, review_id: UUID) -> bool:
         """

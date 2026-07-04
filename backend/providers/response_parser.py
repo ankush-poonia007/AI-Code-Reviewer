@@ -62,7 +62,10 @@ class ResponseParser:
                 data_dict = json.loads(cleaned_json_str)
                 return ParsedReviewResult(**data_dict)
             except Exception:
-                cls._logger.error(f"JSON syntax deserialization failure: {str(e)} | Raw block: {json_str}")
+                cls._logger.error(
+                    f"JSON syntax deserialization failure: {str(e)} | "
+                    f"response_length={len(response_content)} parsed_length={len(json_str)}"
+                )
                 raise ResponseParsingError(f"AI response text is malformed and could not be loaded as JSON: {str(e)}") from e
             
         except ValidationError as e:

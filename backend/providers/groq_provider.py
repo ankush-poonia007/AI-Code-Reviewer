@@ -19,7 +19,10 @@ class GroqProvider(LLMProvider):
 
     def __init__(self) -> None:
         """Initializes the underlying async client using variables from config.py."""
-        self._client = AsyncGroq(api_key=settings.GROQ_API_KEY)
+        self._client = AsyncGroq(
+            api_key=settings.GROQ_API_KEY,
+            timeout=float(settings.LLM_REQUEST_TIMEOUT_SECONDS),
+        )
         self._model_name = settings.GROQ_MODEL
         # Structural log contextualization binding to match Gemini exactly
         self._logger = logger.bind(provider="groq", component="provider")
