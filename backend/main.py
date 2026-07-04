@@ -7,9 +7,11 @@ from loguru import logger
 from backend.config import settings
 from backend.utils.logger import setup_logging
 from backend.database.init_db import initialize_database
+from backend.database.database import engine
 from backend.api.exceptions import setup_exception_handlers
 from backend.api.v1.health import router as health_router
 from backend.api.router import api_router
+from backend.providers.provider_factory import ProviderFactory
 
 
 # =====================================================================
@@ -25,6 +27,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     try:
         settings.verify_active_credentials()
         logger.success("Active LLM provider credentials verified.")
+        ProviderFactory.get_provider()
+        logger.success(f"Active LLM provider '{settings.LLM_PROVIDER}' initialized successfully.")
         # Automate database schema footprint checks cleanly on actual server boot
         initialize_database()
         logger.success("Application database bootstrap hook completed successfully.")
@@ -35,6 +39,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     yield  # Hand over operational control matrix to the Uvicorn worker thread pipeline
 
     logger.info("Server lifecycles terminating: Executing shutdown hooks cleanups...")
+    engine.dispose()
+    logger.success("Database engine connections disposed cleanly.")
 
 
 # =====================================================================
@@ -66,7 +72,7 @@ setup_exception_handlers(app)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
-    allow_credentials=True,
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

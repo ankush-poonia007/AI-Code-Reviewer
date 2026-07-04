@@ -54,7 +54,10 @@ class GeminiProvider(LLMProvider):
             )
 
             # Defensive handling parsing extracted text output payloads
-            response_text = response.text if response.text is not None else ""
+            if response.text is None or not response.text.strip():
+                raise LLMProviderError("Gemini returned an empty response with no completion content.")
+
+            response_text = response.text
             
             # Safely navigate metadata tracking logs if token counters are supplied
             usage_info = response.usage_metadata

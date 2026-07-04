@@ -22,7 +22,7 @@ class ResponseParser:
         cleaned = raw_text.strip()
         
         # Match data wrapped inside standard markdown backticks ```json ... ``` or ``` ... ```
-        markdown_match = re.search(r"```(?:json)?\s*(\{.*?\})\s*```", cleaned, re.DOTALL)
+        markdown_match = re.search(r"```(?:json)?\s*(\{.*\})\s*```", cleaned, re.DOTALL)
         if markdown_match:
             return markdown_match.group(1).strip()
             
@@ -69,5 +69,12 @@ class ResponseParser:
                 raise ResponseParsingError(f"AI response text is malformed and could not be loaded as JSON: {str(e)}") from e
             
         except ValidationError as e:
-            cls._logger.error(f"Pydantic business validation constraint failure: {str(e)}")
-            raise ResponseParsingError(f"AI response did not adhere to required schema layout properties: {str(e)}") from e
+            error_count = e.error_count()
+            cls._logger.error(
+                f"Pydantic business validation constraint failure: "
+                f"{error_count} field error(s) in AI response payload."
+            )
+            raise ResponseParsingError(
+                f"AI response did not adhere to required schema layout properties: "
+                f"{error_count} validation error(s)."
+            ) from e

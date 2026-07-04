@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from loguru import logger
 
 from backend.config import settings
+from backend.constants import SupportedLanguage, validate_language
 from backend.models.review import Review
 from backend.models.issue import Issue
 from backend.models.review_execution import ReviewExecution
@@ -60,6 +61,9 @@ class ReviewService:
         # Step 1: Establish an early database footprint before entering network loops
         review_record = self._create_review(filename=filename, language=language)
         review_uuid = UUID(review_record.id)
+
+        # Commit PENDING record before the LLM call to avoid holding SQLite locks during network I/O
+        self.db.commit()
         
         try:
             # Step 2: Build the decoupled static/dynamic instruction block prompt (ADR-030)
@@ -107,9 +111,10 @@ class ReviewService:
     # =====================================================================
     def _create_review(self, filename: str, language: str) -> Review:
         """Instantiates an early tracking record row inside database memory with PENDING status."""
+        normalized_language = validate_language(language)
         review_entity = Review(
             filename=filename,
-            language=language,
+            language=SupportedLanguage(normalized_language),
             executive_summary="Initializing code analysis workflow...",
             status=ReviewStatusEnum.PENDING,
             review_duration_ms=0

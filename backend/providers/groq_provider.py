@@ -54,6 +54,9 @@ class GroqProvider(LLMProvider):
             )
 
             # Defensive fallback normalization handling for null values - fixed with array index extraction
+            if not completion.choices:
+                raise LLMProviderError("Groq returned an empty choices array with no completion content.")
+
             raw_content = completion.choices[0].message.content
             response_text = raw_content if raw_content is not None else ""
             

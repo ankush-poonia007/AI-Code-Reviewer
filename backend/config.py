@@ -1,4 +1,3 @@
-import os
 from pydantic import Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -31,10 +30,10 @@ class Settings(BaseSettings):
     # ==========================================
     # Provider-Agnostic LLM Infrastructure
     # ==========================================
-    LLM_PROVIDER: str = Field(default="groq")  # Supported: "groq", "gemini", "ollama"
-    MAX_TOKENS: int = Field(default=4096)
-    TEMPERATURE: float = Field(default=0.2)
-    LLM_REQUEST_TIMEOUT_SECONDS: int = Field(default=120)
+    LLM_PROVIDER: str = Field(default="groq")  # Supported: "groq", "gemini"
+    MAX_TOKENS: int = Field(default=4096, ge=1, le=128000)
+    TEMPERATURE: float = Field(default=0.2, ge=0.0, le=2.0)
+    LLM_REQUEST_TIMEOUT_SECONDS: int = Field(default=120, ge=10, le=600)
 
     # Individual Ecosystem API Target Tokens & Models
     GROQ_API_KEY: str = Field(default="")
@@ -42,15 +41,13 @@ class Settings(BaseSettings):
     
     GEMINI_API_KEY: str = Field(default="")
     GEMINI_MODEL: str = Field(default="gemini-2.5-flash")
-    
-    OLLAMA_BASE_URL: str = Field(default="http://localhost:11434")
 
     # ==========================================
     # File Staging & Upload Directory Limits
     # ==========================================
     UPLOAD_DIR: str = Field(default="uploads")
     REPORT_DIR: str = Field(default="reports")
-    MAX_FILE_SIZE_MB: int = Field(default=5)
+    MAX_FILE_SIZE_MB: int = Field(default=5, ge=1, le=50)
 
     # ==========================================
     # Runtime Guardrail Interceptors
@@ -60,23 +57,28 @@ class Settings(BaseSettings):
     def validate_provider_selection(cls, value: str) -> str:
         """Ensures selected AI orchestrator engine is a recognized platform target."""
         cleaned = str(value).strip().lower() if value else "groq"
-        allowed_platforms = {"groq", "gemini", "ollama"}
+        allowed_platforms = {"groq", "gemini"}
         if cleaned not in allowed_platforms:
             raise ValueError(
                 f"\n[CONFIG CRITICAL] LLM_PROVIDER '{cleaned}' is unsupported.\n"
-                f"Please update your .env to target one of: {list(allowed_platforms)}"
+                f"Please update your .env to target one of: {sorted(allowed_platforms)}"
             )
         return cleaned
 
+    @property
+    def max_source_code_bytes(self) -> int:
+        """Maximum source code payload size derived from MAX_FILE_SIZE_MB."""
+        return self.MAX_FILE_SIZE_MB * 1024 * 1024
+
     def verify_active_credentials(self) -> None:
         """
-        Dynamically intercepts and ensures the specific API key for the 
+        Dynamically intercepts and ensures the specific API key for the
         currently chosen provider exists at application boot time.
         """
         provider = self.LLM_PROVIDER.lower()
         if provider == "groq" and (not self.GROQ_API_KEY or "your_actual" in self.GROQ_API_KEY):
             raise ValueError("\n[CONFIG CRITICAL] GROQ_API_KEY is missing or unconfigured in your .env file.")
-        elif provider == "gemini" and (not self.GEMINI_API_KEY or "your_actual" in self.GEMINI_API_KEY):
+        if provider == "gemini" and (not self.GEMINI_API_KEY or "your_actual" in self.GEMINI_API_KEY):
             raise ValueError("\n[CONFIG CRITICAL] GEMINI_API_KEY is missing or unconfigured in your .env file.")
 
 # Instantiate a single, global settings instance for system-wide consumption

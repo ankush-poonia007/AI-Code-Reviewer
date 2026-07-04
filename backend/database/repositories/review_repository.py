@@ -59,13 +59,24 @@ class ReviewRepository:
     @staticmethod
     def persist_in_isolated_transaction(review: Review) -> None:
         """
-        Persists a review record in a standalone transaction.
+        Persists or updates a review record in a standalone transaction.
         Used for audit recovery after the primary workflow transaction has been rolled back.
+        Updates an existing row when the PENDING record was committed before the LLM call.
         """
         db = SessionLocal()
         try:
-            db.add(review)
+            existing = db.query(Review).filter(Review.id == review.id).first()
+            if existing:
+                existing.status = review.status
+                existing.executive_summary = review.executive_summary
+                existing.review_duration_ms = review.review_duration_ms
+                existing.overall_score = review.overall_score
+            else:
+                db.add(review)
             db.commit()
+        except Exception:
+            db.rollback()
+            raise
         finally:
             db.close()
 

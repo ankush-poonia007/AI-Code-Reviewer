@@ -42,6 +42,33 @@ class SupportedLanguage(str, Enum):
     UNKNOWN = "unknown"
 
 
+# Languages accepted by review endpoints (excludes UNKNOWN placeholder)
+SUPPORTED_LANGUAGE_VALUES: frozenset[str] = frozenset(
+    lang.value for lang in SupportedLanguage if lang is not SupportedLanguage.UNKNOWN
+)
+
+
+def validate_language(value: str) -> str:
+    """Normalizes and validates a programming language key against supported profiles."""
+    normalized = str(value).strip().lower()
+    if normalized not in SUPPORTED_LANGUAGE_VALUES:
+        supported = sorted(SUPPORTED_LANGUAGE_VALUES)
+        raise ValueError(
+            f"Unsupported language '{value}'. Supported languages: {supported}"
+        )
+    return normalized
+
+
+def validate_safe_filename(value: str) -> str:
+    """Rejects path traversal patterns and blank filenames."""
+    cleaned = str(value).strip()
+    if not cleaned:
+        raise ValueError("Filename must not be empty.")
+    if ".." in cleaned or "/" in cleaned or "\\" in cleaned:
+        raise ValueError("Filename must not contain path separators or traversal sequences.")
+    return cleaned
+
+
 # =====================================================================
 # File Extension Mappings
 # =====================================================================
