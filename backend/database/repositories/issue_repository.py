@@ -58,3 +58,36 @@ class IssueRepository:
             self.db.flush()
             return True
         return False
+
+    def get_severity_counts(self) -> dict:
+        """
+        Aggregates issue counts by severity for the dashboard stats.
+        """
+        from sqlalchemy import func
+        from backend.models.enums import SeverityEnum
+
+        results = (
+            self.db.query(Issue.severity, func.count(Issue.id))
+            .group_by(Issue.severity)
+            .all()
+        )
+
+        counts = {
+            "critical_issue_count": 0,
+            "high_issue_count": 0,
+            "medium_issue_count": 0,
+            "low_issue_count": 0,
+        }
+
+        for severity, count in results:
+            if severity == SeverityEnum.CRITICAL or severity == "CRITICAL":
+                counts["critical_issue_count"] = count
+            elif severity == SeverityEnum.HIGH or severity == "HIGH":
+                counts["high_issue_count"] = count
+            elif severity == SeverityEnum.MEDIUM or severity == "MEDIUM":
+                counts["medium_issue_count"] = count
+            elif severity == SeverityEnum.LOW or severity == "LOW":
+                counts["low_issue_count"] = count
+
+        return counts
+

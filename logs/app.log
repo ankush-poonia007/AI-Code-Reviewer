@@ -2603,3 +2603,139 @@ Traceback (most recent call last):
           └ LLMProviderError('simulated provider failure')
 
 backend.providers.exceptions.LLMProviderError: simulated provider failure
+2026-07-04 10:27:11 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:27:11 | INFO     | __main__:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:27:11 | SUCCESS  | __main__:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:27:52 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:27:52 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:27:52 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:27:52 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:27:52 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:27:53 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:27:53 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:27:53 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:27:53 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:27:53 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:27:53 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:28:01 | INFO     | backend.api.v1.health:system_health_check:15 - API diagnostics request intercepted at version 1 checkpoint.
+2026-07-04 10:29:06 | INFO     | backend.api.v1.review:submit_code_review:31 - API Gate intercept [JSON]: Submitting code analysis for file 'test.py'
+2026-07-04 10:29:06 | INFO     | backend.services.review_service:review_code:56 - Initiating code review transaction block for file: test.py
+2026-07-04 10:29:06 | INFO     | backend.providers.groq_provider:generate_review:41 - Generating code review using Groq with model: llama-3.3-70b-versatile
+2026-07-04 10:29:08 | SUCCESS  | backend.services.review_service:review_code:91 - Code review transaction block completed and saved to disk for test.py.
+2026-07-04 10:35:54 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:35:54 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:35:57 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:35:57 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:35:57 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:35:57 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:35:57 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:35:57 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:35:57 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:35:57 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:35:57 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:36:12 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:36:12 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:36:14 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:36:14 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:36:14 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:36:14 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:36:14 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:36:15 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:36:15 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:36:15 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:36:15 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:36:25 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:36:25 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:36:27 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:36:27 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:36:27 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:36:27 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:36:27 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:36:28 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:36:28 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:36:28 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:36:28 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:36:42 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:36:42 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:36:44 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:36:44 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:36:44 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:36:44 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:36:44 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:36:45 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:36:45 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:36:45 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:36:45 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:36:56 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:36:56 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:36:58 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:36:58 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:36:58 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:36:58 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:36:58 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:36:58 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:36:58 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:36:58 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:36:58 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:37:19 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:37:19 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:37:22 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:37:22 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:37:22 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:37:22 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:37:22 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:37:22 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:37:22 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:37:22 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:37:22 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:37:41 | INFO     | backend.main:lifespan:41 - Server lifecycles terminating: Executing shutdown hooks cleanups...
+2026-07-04 10:37:41 | SUCCESS  | backend.main:lifespan:43 - Database engine connections disposed cleanly.
+2026-07-04 10:37:44 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:37:44 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:37:44 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:37:44 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:37:44 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:37:44 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:37:44 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:37:44 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:37:44 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:37:57 | SUCCESS  | backend.utils.logger:setup_logging:35 - Centralized Loguru application engine initialized successfully.
+2026-07-04 10:37:57 | INFO     | backend.main:<module>:51 - Assembling AI Code Review Assistant Configuration Schemas (v1.0.0)...
+2026-07-04 10:37:57 | SUCCESS  | backend.main:<module>:87 - FastAPI runtime orchestration container assembled completely. Standing by for worker lifecycles.
+2026-07-04 10:37:57 | INFO     | backend.main:lifespan:26 - Server lifecycles initializing: Executing startup hooks...
+2026-07-04 10:37:57 | SUCCESS  | backend.main:lifespan:29 - Active LLM provider credentials verified.
+2026-07-04 10:37:58 | SUCCESS  | backend.main:lifespan:31 - Active LLM provider 'groq' initialized successfully.
+2026-07-04 10:37:58 | INFO     | backend.database.init_db:initialize_database:10 - Initializing database schema...
+2026-07-04 10:37:58 | SUCCESS  | backend.database.init_db:initialize_database:14 - Database initialized successfully.
+2026-07-04 10:37:58 | SUCCESS  | backend.main:lifespan:34 - Application database bootstrap hook completed successfully.
+2026-07-04 10:38:33 | INFO     | backend.api.v1.health:system_health_check:15 - API diagnostics request intercepted at version 1 checkpoint.
+2026-07-04 10:38:34 | INFO     | backend.api.v1.review:get_model_info:250 - API Gate intercept: Requesting active LLM settings configuration.
+2026-07-04 10:38:34 | INFO     | backend.services.review_service:get_model_information:371 - Fetching LLM settings config.
+2026-07-04 10:38:34 | INFO     | backend.api.v1.review:get_dashboard_stats:234 - API Gate intercept: Requesting dashboard statistics aggregation.
+2026-07-04 10:38:34 | INFO     | backend.services.review_service:dashboard_statistics:362 - Aggregating dashboard statistics DTO.
+2026-07-04 10:38:34 | INFO     | backend.api.v1.review:list_reviews:147 - API Gate intercept: Fetching paginated reviews (skip=0, limit=5)
+2026-07-04 10:38:34 | INFO     | backend.services.review_service:list_reviews:227 - Listing paginated reviews: skip=0, limit=5
+2026-07-04 10:38:34 | INFO     | backend.api.v1.review:get_review:165 - API Gate intercept: Fetching complete review for ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:34 | INFO     | backend.services.review_service:get_review:246 - Fetching detailed review for ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:35 | INFO     | backend.api.v1.review:get_review_issues:200 - API Gate intercept: Fetching issues for review ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:35 | INFO     | backend.services.review_service:get_review_issues:312 - Listing issues for review ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:35 | INFO     | backend.api.v1.review:get_review_execution:218 - API Gate intercept: Fetching execution metadata for review ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:35 | INFO     | backend.services.review_service:get_review_execution:337 - Fetching execution telemetry for review ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:35 | INFO     | backend.api.v1.review:get_review:165 - API Gate intercept: Fetching complete review for ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | INFO     | backend.services.review_service:get_review:246 - Fetching detailed review for ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | WARNING  | backend.api.exceptions:review_not_found_exception_handler:120 - Review not found: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | INFO     | backend.api.v1.review:get_review_issues:200 - API Gate intercept: Fetching issues for review ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | INFO     | backend.services.review_service:get_review_issues:312 - Listing issues for review ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | WARNING  | backend.api.exceptions:review_not_found_exception_handler:120 - Review not found: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | INFO     | backend.api.v1.review:get_review_execution:218 - API Gate intercept: Fetching execution metadata for review ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | INFO     | backend.services.review_service:get_review_execution:337 - Fetching execution telemetry for review ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:35 | WARNING  | backend.api.exceptions:review_not_found_exception_handler:120 - Review not found: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:36 | INFO     | backend.api.v1.review:delete_review:182 - API Gate intercept: Requesting deletion of review ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:36 | INFO     | backend.services.review_service:delete_review:299 - Deleting review with ID: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:36 | WARNING  | backend.api.exceptions:review_not_found_exception_handler:120 - Review not found: 00000000-0000-0000-0000-000000000000
+2026-07-04 10:38:49 | INFO     | backend.api.v1.review:delete_review:182 - API Gate intercept: Requesting deletion of review ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:49 | INFO     | backend.services.review_service:delete_review:299 - Deleting review with ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:49 | SUCCESS  | backend.services.review_service:delete_review:306 - Review f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d and cascade dependencies deleted.
+2026-07-04 10:38:49 | INFO     | backend.api.v1.review:get_review:165 - API Gate intercept: Fetching complete review for ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:49 | INFO     | backend.services.review_service:get_review:246 - Fetching detailed review for ID: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d
+2026-07-04 10:38:49 | WARNING  | backend.api.exceptions:review_not_found_exception_handler:120 - Review not found: f2a8ae40-98c6-4cf2-952a-44ab3fbf7e1d

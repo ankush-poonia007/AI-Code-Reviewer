@@ -16,7 +16,15 @@ from backend.providers.base_provider import LLMProvider
 from backend.providers.response_models import LLMResponse
 from backend.providers.response_parser import ResponseParser
 from backend.prompts.review_prompt import ReviewPromptBuilder
-from backend.schemas.review_result import ParsedReviewResult
+from backend.schemas.review_result import ParsedReviewResult, ParsedIssue
+from backend.schemas.review_response import (
+    ReviewSummaryResponse,
+    ExecutionResponse,
+    ReviewDetailResponse,
+    DashboardResponse,
+    ModelInfoResponse,
+)
+from backend.services.exceptions import ReviewNotFoundError, ExecutionNotFoundError
 
 
 class ReviewService:
@@ -211,3 +219,162 @@ class ReviewService:
 
         except Exception as audit_err:
             self._logger.critical(f"Critical System Failure: Could not commit failure status to database: {str(audit_err)}")
+
+    async def list_reviews(self, skip: int = 0, limit: int = 10) -> list[ReviewSummaryResponse]:
+        """
+        Retrieves a paginated list of reviews translated into lightweight summary responses.
+        """
+        self._logger.info(f"Listing paginated reviews: skip={skip}, limit={limit}")
+        reviews = self.review_repo.list_all(skip=skip, limit=limit)
+        return [
+            ReviewSummaryResponse(
+                review_id=review.id,
+                filename=review.filename,
+                language=review.language.value if hasattr(review.language, 'value') else str(review.language),
+                status=review.status.value if hasattr(review.status, 'value') else str(review.status),
+                overall_score=float(review.overall_score),
+                created_at=review.created_at,
+                issue_count=len(review.issues)
+            )
+            for review in reviews
+        ]
+
+    async def get_review(self, review_id: UUID) -> ReviewDetailResponse:
+        """
+        Retrieves a complete, detailed code review report, including issues and telemetry execution mapping.
+        """
+        self._logger.info(f"Fetching detailed review for ID: {review_id}")
+        review = self.review_repo.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundError(str(review_id))
+
+        execution_dto = None
+        if review.execution:
+            exec_model = review.execution
+            execution_dto = ExecutionResponse(
+                provider=exec_model.provider,
+                model_name=exec_model.model_name,
+                temperature=exec_model.temperature,
+                max_tokens=exec_model.max_tokens,
+                processing_time_ms=exec_model.processing_time_ms,
+                prompt_version=exec_model.prompt_version,
+                input_tokens=exec_model.input_tokens,
+                output_tokens=exec_model.output_tokens,
+                total_tokens=exec_model.total_tokens
+            )
+
+        issues_list = [
+            ParsedIssue(
+                category=issue.category.value if hasattr(issue.category, 'value') else str(issue.category),
+                issue_type=issue.issue_type,
+                severity=issue.severity.value if hasattr(issue.severity, 'value') else str(issue.severity),
+                title=issue.title,
+                description=issue.description,
+                recommendation=issue.recommendation,
+                code_snippet=issue.code_snippet,
+                line_number=issue.line_number,
+                confidence=issue.confidence
+            )
+            for issue in review.issues
+        ]
+
+        return ReviewDetailResponse(
+            review_id=review.id,
+            filename=review.filename,
+            language=review.language.value if hasattr(review.language, 'value') else str(review.language),
+            status=review.status.value if hasattr(review.status, 'value') else str(review.status),
+            overall_score=float(review.overall_score),
+            executive_summary=review.executive_summary,
+            review_duration_ms=review.review_duration_ms,
+            created_at=review.created_at,
+            updated_at=review.updated_at,
+            issues=issues_list,
+            execution=execution_dto
+        )
+
+    async def delete_review(self, review_id: UUID) -> None:
+        """
+        Removes a review record from relational storage. Cascades deletion to issues and telemetry.
+        """
+        self._logger.info(f"Deleting review with ID: {review_id}")
+        review = self.review_repo.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundError(str(review_id))
+
+        self.review_repo.delete(review_id)
+        self.db.commit()
+        self._logger.success(f"Review {review_id} and cascade dependencies deleted.")
+
+    async def get_review_issues(self, review_id: UUID) -> list[ParsedIssue]:
+        """
+        Retrieves all issues associated with a specific review ID.
+        """
+        self._logger.info(f"Listing issues for review ID: {review_id}")
+        review = self.review_repo.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundError(str(review_id))
+
+        issues = self.issue_repo.get_by_review_id(review_id)
+        return [
+            ParsedIssue(
+                category=issue.category.value if hasattr(issue.category, 'value') else str(issue.category),
+                issue_type=issue.issue_type,
+                severity=issue.severity.value if hasattr(issue.severity, 'value') else str(issue.severity),
+                title=issue.title,
+                description=issue.description,
+                recommendation=issue.recommendation,
+                code_snippet=issue.code_snippet,
+                line_number=issue.line_number,
+                confidence=issue.confidence
+            )
+            for issue in issues
+        ]
+
+    async def get_review_execution(self, review_id: UUID) -> ExecutionResponse:
+        """
+        Retrieves LLM execution metadata and metrics for a specific review.
+        """
+        self._logger.info(f"Fetching execution telemetry for review ID: {review_id}")
+        review = self.review_repo.get_by_id(review_id)
+        if not review:
+            raise ReviewNotFoundError(str(review_id))
+
+        execution = self.execution_repo.get_by_review_id(review_id)
+        if not execution:
+            raise ExecutionNotFoundError(str(review_id))
+
+        return ExecutionResponse(
+            provider=execution.provider,
+            model_name=execution.model_name,
+            temperature=execution.temperature,
+            max_tokens=execution.max_tokens,
+            processing_time_ms=execution.processing_time_ms,
+            prompt_version=execution.prompt_version,
+            input_tokens=execution.input_tokens,
+            output_tokens=execution.output_tokens,
+            total_tokens=execution.total_tokens
+        )
+
+    async def dashboard_statistics(self) -> DashboardResponse:
+        """
+        Calculates and returns aggregated dashboard statistics.
+        """
+        self._logger.info("Aggregating dashboard statistics DTO.")
+        review_stats = self.review_repo.get_dashboard_stats()
+        issue_stats = self.issue_repo.get_severity_counts()
+        return DashboardResponse(**review_stats, **issue_stats)
+
+    async def get_model_information(self) -> ModelInfoResponse:
+        """
+        Exposes configured LLM settings.
+        """
+        self._logger.info("Fetching LLM settings config.")
+        provider = settings.LLM_PROVIDER
+        model = settings.GROQ_MODEL if provider == "groq" else settings.GEMINI_MODEL
+        return ModelInfoResponse(
+            provider=provider,
+            model=model,
+            temperature=settings.TEMPERATURE,
+            max_tokens=settings.MAX_TOKENS
+        )
+

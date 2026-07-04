@@ -92,3 +92,25 @@ class ReviewRepository:
             self.db.flush()
             return True
         return False
+
+    def get_dashboard_stats(self) -> dict:
+        """
+        Aggregates dashboard stats from the reviews table:
+        total_reviews, completed_reviews, failed_reviews, average_score, average_processing_time
+        """
+        from sqlalchemy import func
+
+        total = self.db.query(func.count(Review.id)).scalar() or 0
+        completed = self.db.query(func.count(Review.id)).filter(Review.status == ReviewStatusEnum.COMPLETED).scalar() or 0
+        failed = self.db.query(func.count(Review.id)).filter(Review.status == ReviewStatusEnum.FAILED).scalar() or 0
+        avg_score = self.db.query(func.avg(Review.overall_score)).filter(Review.status == ReviewStatusEnum.COMPLETED).scalar() or 0.0
+        avg_duration = self.db.query(func.avg(Review.review_duration_ms)).filter(Review.status == ReviewStatusEnum.COMPLETED).scalar() or 0.0
+
+        return {
+            "total_reviews": total,
+            "completed_reviews": completed,
+            "failed_reviews": failed,
+            "average_score": float(avg_score),
+            "average_processing_time": float(avg_duration)
+        }
+

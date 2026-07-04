@@ -12,6 +12,7 @@ from backend.providers.exceptions import (
     LLMProviderUnavailableError,
     ResponseParsingError,
 )
+from backend.services.exceptions import ReviewNotFoundError, ExecutionNotFoundError
 
 # API infrastructure logging proxy binding
 api_logger = logger.bind(component="api", system="exceptions")
@@ -111,6 +112,30 @@ def setup_exception_handlers(app: FastAPI) -> None:
         )
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            content=response_payload.model_dump()
+        )
+
+    @app.exception_handler(ReviewNotFoundError)
+    async def review_not_found_exception_handler(request: Request, exc: ReviewNotFoundError) -> JSONResponse:
+        api_logger.warning(f"Review not found: {exc.review_id}")
+        response_payload = APIErrorResponse(
+            error="Review Not Found",
+            detail=str(exc)
+        )
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
+            content=response_payload.model_dump()
+        )
+
+    @app.exception_handler(ExecutionNotFoundError)
+    async def execution_not_found_exception_handler(request: Request, exc: ExecutionNotFoundError) -> JSONResponse:
+        api_logger.warning(f"Execution telemetry not found: {exc.review_id}")
+        response_payload = APIErrorResponse(
+            error="Execution Telemetry Not Found",
+            detail=str(exc)
+        )
+        return JSONResponse(
+            status_code=status.HTTP_404_NOT_FOUND,
             content=response_payload.model_dump()
         )
 

@@ -1,10 +1,20 @@
-from fastapi import APIRouter, Depends, status, UploadFile, File, Form, HTTPException
+from typing import List
+from uuid import UUID
+from fastapi import APIRouter, Depends, status, UploadFile, File, Form, HTTPException, Query, Path
 from loguru import logger
 
 from backend.config import settings
 from backend.constants import validate_language, validate_safe_filename
 from backend.schemas.review_request import ReviewRequest
-from backend.schemas.review_response import ReviewResponse
+from backend.schemas.review_response import (
+    ReviewResponse,
+    ReviewSummaryResponse,
+    ReviewDetailResponse,
+    ExecutionResponse,
+    DashboardResponse,
+    ModelInfoResponse,
+)
+from backend.schemas.review_result import ParsedIssue
 from backend.models.enums import ReviewStatusEnum
 from backend.api.dependencies import get_review_service
 from backend.services.review_service import ReviewService
@@ -114,3 +124,129 @@ async def upload_file_review(
         executive_summary=parsed_result.executive_summary,
         issues=parsed_result.issues
     )
+
+
+# =====================================================================
+# 3️⃣ Remaining Production REST API Management & Stats Endpoints
+# =====================================================================
+@router.get(
+    "/reviews",
+    response_model=List[ReviewSummaryResponse],
+    status_code=status.HTTP_200_OK,
+    summary="Get all historical code reviews"
+)
+async def list_reviews(
+    skip: int = Query(0, ge=0, description="Number of reviews to skip for pagination."),
+    limit: int = Query(10, ge=1, le=100, description="Maximum number of reviews to return."),
+    review_service: ReviewService = Depends(get_review_service)
+) -> List[ReviewSummaryResponse]:
+    """
+    Returns a paginated list of historical code review summaries, ordered newest first.
+    Lightweight summary objects exclude executive summary text, issues, and execution metadata.
+    """
+    logger.info(f"API Gate intercept: Fetching paginated reviews (skip={skip}, limit={limit})")
+    return await review_service.list_reviews(skip=skip, limit=limit)
+
+
+@router.get(
+    "/reviews/{review_id}",
+    response_model=ReviewDetailResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get complete code review details"
+)
+async def get_review(
+    review_id: UUID = Path(..., description="The unique 36-character UUID string identifier of the review."),
+    review_service: ReviewService = Depends(get_review_service)
+) -> ReviewDetailResponse:
+    """
+    Returns a complete detailed review report including issues and LLM provider execution telemetry.
+    Raises 404 if the review does not exist.
+    """
+    logger.info(f"API Gate intercept: Fetching complete review for ID: {review_id}")
+    return await review_service.get_review(review_id)
+
+
+@router.delete(
+    "/reviews/{review_id}",
+    status_code=status.HTTP_204_NO_CONTENT,
+    summary="Delete a code review record"
+)
+async def delete_review(
+    review_id: UUID = Path(..., description="The unique 36-character UUID string identifier of the review."),
+    review_service: ReviewService = Depends(get_review_service)
+) -> None:
+    """
+    Permanently deletes a code review record and automatically cascade deletes all associated issues and execution metadata.
+    Returns 204 No Content on success. Raises 404 if the review is missing.
+    """
+    logger.info(f"API Gate intercept: Requesting deletion of review ID: {review_id}")
+    await review_service.delete_review(review_id)
+
+
+@router.get(
+    "/reviews/{review_id}/issues",
+    response_model=List[ParsedIssue],
+    status_code=status.HTTP_200_OK,
+    summary="Get issues list for a code review"
+)
+async def get_review_issues(
+    review_id: UUID = Path(..., description="The unique 36-character UUID string identifier of the review."),
+    review_service: ReviewService = Depends(get_review_service)
+) -> List[ParsedIssue]:
+    """
+    Returns the collection of granular issues identified during a specific code review.
+    Returns an empty array `[]` if no issues exist. Raises 404 if the review record is missing.
+    """
+    logger.info(f"API Gate intercept: Fetching issues for review ID: {review_id}")
+    return await review_service.get_review_issues(review_id)
+
+
+@router.get(
+    "/reviews/{review_id}/execution",
+    response_model=ExecutionResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get execution metadata for a code review"
+)
+async def get_review_execution(
+    review_id: UUID = Path(..., description="The unique 36-character UUID string identifier of the review."),
+    review_service: ReviewService = Depends(get_review_service)
+) -> ExecutionResponse:
+    """
+    Returns the operational telemetry metadata recorded during the LLM provider call for a specific review.
+    Raises 404 if either the review is missing or the execution telemetry is missing.
+    """
+    logger.info(f"API Gate intercept: Fetching execution metadata for review ID: {review_id}")
+    return await review_service.get_review_execution(review_id)
+
+
+@router.get(
+    "/dashboard",
+    response_model=DashboardResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get code review dashboard statistics"
+)
+async def get_dashboard_stats(
+    review_service: ReviewService = Depends(get_review_service)
+) -> DashboardResponse:
+    """
+    Returns aggregated metrics for dashboard visualization, including total counts, averages, and severity distributions.
+    """
+    logger.info("API Gate intercept: Requesting dashboard statistics aggregation.")
+    return await review_service.dashboard_statistics()
+
+
+@router.get(
+    "/models",
+    response_model=ModelInfoResponse,
+    status_code=status.HTTP_200_OK,
+    summary="Get active LLM settings configuration"
+)
+async def get_model_info(
+    review_service: ReviewService = Depends(get_review_service)
+) -> ModelInfoResponse:
+    """
+    Exposes configured LLM settings including default model name, temperature, max tokens, and active provider target.
+    """
+    logger.info("API Gate intercept: Requesting active LLM settings configuration.")
+    return await review_service.get_model_information()
+
