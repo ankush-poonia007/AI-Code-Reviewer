@@ -61,7 +61,7 @@ class ReviewRepository:
         """
         Persists or updates a review record in a standalone transaction.
         Used for audit recovery after the primary workflow transaction has been rolled back.
-        Updates an existing row when the PENDING record was committed before the LLM call.
+        Inserts when the rolled-back PENDING row no longer exists; updates if a row remains.
         """
         db = SessionLocal()
         try:

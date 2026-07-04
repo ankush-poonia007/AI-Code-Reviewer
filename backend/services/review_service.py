@@ -61,9 +61,6 @@ class ReviewService:
         # Step 1: Establish an early database footprint before entering network loops
         review_record = self._create_review(filename=filename, language=language)
         review_uuid = UUID(review_record.id)
-
-        # Commit PENDING record before the LLM call to avoid holding SQLite locks during network I/O
-        self.db.commit()
         
         try:
             # Step 2: Build the decoupled static/dynamic instruction block prompt (ADR-030)
