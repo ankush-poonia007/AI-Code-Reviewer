@@ -1,0 +1,1783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Code Reviewer - Engineering Handbook v1.0</title>
+    <style>
+        :root {
+            /* Light Theme Custom Variables */
+            --background: #F8FAFC;
+            --surface: #FFFFFF;
+            --secondary-surface: #F1F5F9;
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --secondary: #1E293B;
+            --accent: #06B6D4;
+            --border: #E2E8F0;
+            --success: #10B981;
+            --warning: #F59E0B;
+            --danger: #EF4444;
+            --text: #0F172A;
+            --muted: #64748B;
+            --code-bg: #0F172A;
+            --code-text: #E2E8F0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+            --radius: 8px;
+            --font-stack: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            
+            /* Section Color Codes */
+            --accent-blue: #3B82F6;
+            --accent-green: #10B981;
+            --accent-purple: #8B5CF6;
+            --accent-orange: #F59E0B;
+            --accent-red: #EF4444;
+        }
+
+        .dark-theme {
+            /* Dark Theme Custom Variables */
+            --background: #0B0F19;
+            --surface: #151F32;
+            --secondary-surface: #1E293B;
+            --primary: #3B82F6;
+            --primary-hover: #60A5FA;
+            --secondary: #E2E8F0;
+            --accent: #22D3EE;
+            --border: #2D3748;
+            --success: #34D399;
+            --warning: #FBBF24;
+            --danger: #F87171;
+            --text: #F8FAFC;
+            --muted: #94A3B8;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--background);
+            color: var(--text);
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* GitBook Left Sidebar Navigation */
+        aside.sidebar {
+            width: 300px;
+            background-color: var(--surface);
+            border-right: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: var(--primary);
+        }
+
+        .theme-toggle-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.4rem;
+            border-radius: var(--radius);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            transition: background 0.2s;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--secondary-surface);
+        }
+
+        .sidebar-nav-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-group-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+
+        .sidebar-nav-group ul {
+            list-style: none;
+        }
+
+        .sidebar-nav-group a {
+            display: block;
+            padding: 0.4rem 0.75rem;
+            color: var(--text);
+            text-decoration: none;
+            font-size: 0.875rem;
+            border-radius: var(--radius);
+            transition: all 0.15s;
+        }
+
+        .sidebar-nav-group a:hover {
+            background-color: var(--secondary-surface);
+            color: var(--primary);
+        }
+
+        .sidebar-nav-group a.active {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            font-weight: 600;
+        }
+
+        /* Main Scrollable Content Container */
+        .content-wrapper {
+            margin-left: 300px;
+            flex: 1;
+            padding: 2.5rem 3.5rem;
+            max-width: 1000px;
+        }
+
+        /* Top Bar Status / Breadcrumbs */
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .breadcrumbs {
+            font-size: 0.85rem;
+            color: var(--muted);
+            font-weight: 500;
+        }
+
+        /* Professional status badge elements */
+        .header-status-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid var(--border);
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background-color: var(--surface);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        /* Cover / Header section */
+        .handbook-header {
+            margin-bottom: 3rem;
+        }
+
+        .handbook-title {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .handbook-subtitle {
+            font-size: 1.125rem;
+            color: var(--muted);
+            margin-bottom: 1.5rem;
+            max-width: 750px;
+        }
+
+        /* Section Container Boxes */
+        section.doc-section {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem;
+            margin-bottom: 2.5rem;
+            box-shadow: var(--shadow);
+            scroll-margin-top: 2rem;
+        }
+
+        /* Color Accents for Sections */
+        .accent-architecture { border-top: 4px solid var(--accent-blue); }
+        .accent-backend { border-top: 4px solid var(--accent-purple); }
+        .accent-testing { border-top: 4px solid var(--accent-green); }
+        .accent-roadmap { border-top: 4px solid var(--accent-orange); }
+        .accent-security { border-top: 4px solid var(--accent-red); }
+
+        h2.section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        h3.subsection-title {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 1.5rem 0 0.75rem 0;
+            color: var(--text);
+        }
+
+        p.section-description {
+            font-size: 0.95rem;
+            color: var(--muted);
+            margin-bottom: 1.25rem;
+        }
+
+        /* Metrics Dashboard Row */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .metrics-card {
+            background-color: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1rem;
+            text-align: center;
+            box-shadow: var(--shadow);
+        }
+
+        .metrics-value {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .metrics-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        /* Timeline and Freeze Box Widgets */
+        .freeze-box {
+            background-color: var(--secondary-surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+            margin: 1rem 0;
+        }
+
+        .freeze-title {
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            margin-bottom: 0.75rem;
+        }
+
+        .freeze-details {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 0.5rem 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .freeze-item strong {
+            color: var(--text);
+        }
+
+        .freeze-item span {
+            color: var(--muted);
+        }
+
+        /* Project Timeline Path Widget */
+        .project-timeline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 2rem 0;
+            padding: 0 1rem;
+            position: relative;
+        }
+
+        .project-timeline::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 5%;
+            right: 5%;
+            height: 2px;
+            background-color: var(--border);
+            z-index: 1;
+        }
+
+        .timeline-step {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            width: 80px;
+        }
+
+        .step-indicator {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background-color: var(--surface);
+            border: 2px solid var(--border);
+            margin: 0 auto 0.5rem auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--muted);
+            transition: all 0.2s;
+        }
+
+        .timeline-step.completed .step-indicator {
+            background-color: var(--success);
+            border-color: var(--success);
+            color: #FFFFFF;
+        }
+
+        .timeline-step.active .step-indicator {
+            background-color: var(--primary);
+            border-color: var(--primary);
+            color: #FFFFFF;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.2);
+        }
+
+        .step-label {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.02em;
+        }
+
+        .timeline-step.completed .step-label,
+        .timeline-step.active .step-label {
+            color: var(--text);
+        }
+
+        @media (max-width: 600px) {
+            .project-timeline {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1.5rem;
+            }
+            .project-timeline::before {
+                left: 21px;
+                top: 0;
+                bottom: 0;
+                width: 2px;
+                height: 80%;
+            }
+            .timeline-step {
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+                width: 100%;
+                text-align: left;
+            }
+            .step-indicator {
+                margin: 0;
+            }
+        }
+
+        /* SVG Architecture Box Elements */
+        .arch-svg-container {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            background-color: var(--secondary-surface);
+            padding: 1rem;
+            margin: 1.5rem 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .arch-svg-container svg {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Allowed vs Not Allowed Rules Cards */
+        .rules-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin: 1.25rem 0;
+        }
+
+        .rules-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.25rem;
+        }
+
+        .rules-card.allowed {
+            border-left: 4px solid var(--success);
+            background-color: rgba(16, 185, 129, 0.02);
+        }
+
+        .rules-card.not-allowed {
+            border-left: 4px solid var(--danger);
+            background-color: rgba(239, 68, 68, 0.02);
+        }
+
+        .rules-card-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .allowed .rules-card-title { color: var(--success); }
+        .not-allowed .rules-card-title { color: var(--danger); }
+
+        .rules-card ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .rules-card li {
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            position: relative;
+            padding-left: 1.25rem;
+        }
+
+        .allowed li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        .not-allowed li::before {
+            content: "✗";
+            position: absolute;
+            left: 0;
+            color: var(--danger);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Bulleted Block Structures for reduced verbosity */
+        .block-list {
+            margin: 1rem 0;
+        }
+
+        .block-item {
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--border);
+            padding-left: 0.75rem;
+        }
+
+        .block-item-title {
+            font-weight: 700;
+            font-size: 0.925rem;
+            color: var(--text);
+            margin-bottom: 0.15rem;
+        }
+
+        .block-item-content {
+            font-size: 0.875rem;
+            color: var(--muted);
+        }
+
+        /* Unified Table System */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.25rem 0;
+            font-size: 0.875rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        thead {
+            background-color: var(--secondary-surface);
+            font-weight: 700;
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: rgba(241, 245, 249, 0.3);
+        }
+
+        /* Status Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            font-size: 0.725rem;
+            font-weight: 700;
+            padding: 0.15rem 0.5rem;
+            border-radius: 9999px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .badge.success { background-color: rgba(16, 185, 129, 0.1); color: var(--success); }
+        .badge.primary { background-color: rgba(37, 99, 235, 0.1); color: var(--primary); }
+        .badge.warning { background-color: rgba(245, 158, 11, 0.1); color: var(--warning); }
+        .badge.danger { background-color: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .badge.neutral { background-color: rgba(100, 116, 139, 0.1); color: var(--muted); }
+
+        /* Progress Bars */
+        .progress-group {
+            margin: 0.75rem 0;
+        }
+
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .progress-bar-track {
+            width: 100%;
+            height: 6px;
+            background-color: var(--secondary-surface);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 99px;
+        }
+
+        /* Code Block Container with Copy Action */
+        .pre-wrapper {
+            position: relative;
+            margin: 1.25rem 0;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+        }
+
+        .pre-header {
+            background-color: #0B0F19;
+            color: #94A3B8;
+            padding: 0.4rem 1rem;
+            font-family: monospace;
+            font-size: 0.725rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #1E293B;
+        }
+
+        .pre-header button.copy-btn {
+            background: none;
+            border: 1px solid #334155;
+            color: #94A3B8;
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .pre-header button.copy-btn:hover {
+            color: #FFFFFF;
+            background-color: #1E293B;
+            border-color: #475569;
+        }
+
+        pre {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            color: var(--code-text);
+            padding: 1rem 1.25rem;
+            overflow-x: auto;
+            font-size: 0.825rem;
+            line-height: 1.4;
+        }
+
+        .checklist {
+            list-style: none;
+            padding-left: 0;
+            margin: 1rem 0;
+        }
+
+        .checklist li {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .checklist input[type="checkbox"] {
+            margin-top: 0.25rem;
+            accent-color: var(--primary);
+            cursor: not-allowed;
+        }
+
+        .checklist label {
+            color: var(--text);
+        }
+
+        /* Callout Box Widget */
+        .callout {
+            border-left: 4px solid var(--border);
+            background-color: var(--secondary-surface);
+            padding: 1rem 1.25rem;
+            border-radius: 0 var(--radius) var(--radius) 0;
+            margin: 1.25rem 0;
+        }
+
+        .callout.important { border-left-color: var(--primary); }
+        .callout.warning { border-left-color: var(--warning); }
+        .callout.danger { border-left-color: var(--danger); }
+        .callout.success { border-left-color: var(--success); }
+
+        .callout-title {
+            font-weight: 700;
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .callout-desc {
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+
+        /* Footer */
+        footer {
+            margin-top: 4rem;
+            border-top: 1px solid var(--border);
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        @media (max-width: 900px) {
+            aside.sidebar {
+                display: none; /* Can be enhanced to a slide-over panel */
+            }
+            .content-wrapper {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">
+                <span>🚀</span>
+                <span>AI Reviewer</span>
+            </div>
+            <button class="theme-toggle-btn" id="theme-toggle" title="Toggle Theme" aria-label="Toggle Theme">
+                <span id="theme-icon">🌙</span>
+            </button>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">Overview</div>
+            <ul>
+                <li><a href="#cover" class="active">1. Cover Page</a></li>
+                <li><a href="#doc-info">2. Document Information</a></li>
+                <li><a href="#vision">3. Vision &amp; Goals</a></li>
+                <li><a href="#rules">4. Engineering Rules</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">Architecture</div>
+            <ul>
+                <li><a href="#philosophy">5. Design Philosophy</a></li>
+                <li><a href="#architecture">6. System Architecture</a></li>
+                <li><a href="#layers">7. Layer Duties</a></li>
+                <li><a href="#dependency-rules">8. Dependency Rules</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">Backend &amp; DB</div>
+            <ul>
+                <li><a href="#standards">9. Coding Standards</a></li>
+                <li><a href="#naming">10. Naming Conventions</a></li>
+                <li><a href="#workflow">11. Dev Workflow</a></li>
+                <li><a href="#dod">12. Definition of Done</a></li>
+                <li><a href="#status">13. Backend Status</a></li>
+                <li><a href="#database">14. Database Responsibilities</a></li>
+                <li><a href="#pipeline">15. AI Pipeline</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">Testing &amp; QA</div>
+            <ul>
+                <li><a href="#testing">16. Testing Strategy</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">Roadmap</div>
+            <ul>
+                <li><a href="#progress">17. Current Progress</a></li>
+                <li><a href="#non-goals">18. Current Non-Goals</a></li>
+                <li><a href="#roadmap-sec">19. Future Roadmap</a></li>
+                <li><a href="#stretch">20. Stretch Goals</a></li>
+                <li><a href="#timeline">21. Project Timeline</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">ADR Log</div>
+            <ul>
+                <li><a href="#adr-index">22. ADR Index</a></li>
+                <li><a href="#adr-details">23. Detailed ADR Log</a></li>
+            </ul>
+        </div>
+
+        <div class="sidebar-nav-group">
+            <div class="sidebar-group-title">Appendix</div>
+            <ul>
+                <li><a href="#app-folders">24. Folder Structure</a></li>
+                <li><a href="#app-api">25. API Inventory</a></li>
+                <li><a href="#app-env">26. Environment Variables</a></li>
+                <li><a href="#app-glossary">27. Glossary &amp; Refs</a></li>
+                <li><a href="#app-notes">28. Closing Notes</a></li>
+            </ul>
+        </div>
+    </aside>
+
+    <!-- Main Content wrapper -->
+    <div class="content-wrapper">
+        <!-- Top Bar Status info -->
+        <header class="top-bar">
+            <div class="breadcrumbs" id="crumb-nav">Overview &gt; Cover Page</div>
+            <div class="header-status-badge">
+                <span class="status-dot"></span>
+                <span>Arch Status: 🟢 Frozen</span>
+            </div>
+        </header>
+
+        <!-- 1. Cover Page & Header -->
+        <header class="handbook-header" id="cover">
+            <h1 class="handbook-title">Engineering Handbook</h1>
+            <p class="handbook-subtitle">
+                <strong>AI Code Reviewer</strong> is a production-oriented web application that analyzes source code using Large Language Models, stores structured review results, and provides REST APIs and a dashboard for developers.
+            </p>
+        </header>
+
+        <!-- Project Metrics Dashboard Cards -->
+        <div class="metrics-grid">
+            <div class="metrics-card">
+                <div class="metrics-value">100%</div>
+                <div class="metrics-label">Backend Setup</div>
+            </div>
+            <div class="metrics-card">
+                <div class="metrics-value">10</div>
+                <div class="metrics-label">API Endpoints</div>
+            </div>
+            <div class="metrics-card">
+                <div class="metrics-value">72</div>
+                <div class="metrics-label">Tests Passed</div>
+            </div>
+            <div class="metrics-card">
+                <div class="metrics-value">94%</div>
+                <div class="metrics-label">Code Coverage</div>
+            </div>
+            <div class="metrics-card">
+                <div class="metrics-value">v1.0</div>
+                <div class="metrics-label">API version</div>
+            </div>
+            <div class="metrics-card">
+                <div class="metrics-value" style="color: var(--accent-orange);">Docker</div>
+                <div class="metrics-label">Next Phase</div>
+            </div>
+        </div>
+
+        <!-- Current Freeze Box -->
+        <div class="freeze-box">
+            <div class="freeze-title">❄️ Current Architectural Freeze</div>
+            <div class="freeze-details">
+                <div class="freeze-item"><strong>Freeze Version:</strong> <span>1.0.0 (Release Freeze)</span></div>
+                <div class="freeze-item"><strong>Completed:</strong> <span>Core Backend, Databases Models, API endpoints, Mock Testing suite</span></div>
+                <div class="freeze-item"><strong>Active State:</strong> <span>Architecture Frozen (Changes strictly require ADR reviews)</span></div>
+                <div class="freeze-item"><strong>Next Phase:</strong> <span>Docker Containerization &amp; Frontend Dashboard UI integration</span></div>
+            </div>
+        </div>
+
+        <!-- 2. Document Information -->
+        <section id="doc-info" class="doc-section">
+            <h2 class="section-title">📘 2. Document Information</h2>
+            <p class="section-description">Core release metadata tracking this version freeze of the software documentation.</p>
+            
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">System Repository</div>
+                    <div class="block-item-content">ankush-poonia007/AI-Code-Reviewer</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Document Scope</div>
+                    <div class="block-item-content">Single Source of Truth (SSOT) tracking backend architectural decisions, code layers, and project state.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Last Updated</div>
+                    <div class="block-item-content">July 2026</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Format Standard</div>
+                    <div class="block-item-content">Self-contained production-grade static handbook with zero runtime dependencies.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. Project Vision & Goals -->
+        <section id="vision" class="doc-section">
+            <h2 class="section-title">🎯 3. Vision &amp; Goals</h2>
+            <p class="section-description">General objective layout defining what the software project achieves and its core quality boundaries.</p>
+
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">Product Purpose</div>
+                    <div class="block-item-content">Provide instant, automated code auditing using LLM orchestrators without cloud vendor lock-in. Supports locally hosted models and cloud model routes (e.g. Gemini, Groq, Ollama).</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Core Goals</div>
+                    <div class="block-item-content">
+                        • Provider Agnosticism: Swap LLM engines dynamically by config changes.<br>
+                        • Atomic Persistence: Stateless pipeline execution committed to local relational tables.<br>
+                        • High-Fidelity Telemetry: Record token metrics (prompt, completion) and processing speeds.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 4. Engineering Rules Section -->
+        <section id="rules" class="doc-section accent-security">
+            <h2 class="section-title">⚖️ 4. Engineering Rules</h2>
+            <p class="section-description">The project's constitution. The following rules govern database access, modeling boundary layouts, and dependency routing rules.</p>
+            
+            <div class="rules-grid">
+                <div class="rules-card allowed">
+                    <div class="rules-card-title">✓ Allowed Practices</div>
+                    <ul>
+                        <li>Querying tables strictly inside Repository files.</li>
+                        <li>Mapping Pydantic request models to SQLAlchemy DB models inside Service Layer boundaries.</li>
+                        <li>Verifying provider credentials and system environment files at application boot time.</li>
+                        <li>Mocking third-party network APIs during testing cycles.</li>
+                    </ul>
+                </div>
+                <div class="rules-card not-allowed">
+                    <div class="rules-card-title">✗ Strictly Prohibited</div>
+                    <ul>
+                        <li>Direct DB queries or model imports inside API routers.</li>
+                        <li>Exposing raw SQLAlchemy models outside the controller layer (always return Pydantic schemas).</li>
+                        <li>Hardcoding provider configurations inside the source code (always consume settings class values).</li>
+                        <li>Bypassing unit testing pipelines for backend integrations.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. Design Philosophy -->
+        <section id="philosophy" class="doc-section accent-architecture">
+            <h2 class="section-title">⚙️ 5. Design Philosophy</h2>
+            <p class="section-description">Our architectural design patterns follow production coding methodologies to ensure structural longevity.</p>
+            
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">Separation of Concerns (SoC)</div>
+                    <div class="block-item-content">Keep HTTP route adapters, business workflow services, repository data layers, and database ORM entities strictly decoupled.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Stateless Services Pattern</div>
+                    <div class="block-item-content">Service layers retain no state variables. This ensures thread-safety under asynchronous worker conditions (e.g. Uvicorn).</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Dependency Injection (DI)</div>
+                    <div class="block-item-content">Pass database sessions, providers adapters, and prompt templates to class constructors dynamically to ease test fixture mockup creation.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. High-Level Architecture Diagram -->
+        <section id="architecture" class="doc-section accent-architecture">
+            <h2 class="section-title">🧱 6. System Architecture Diagram</h2>
+            <p class="section-description">Decoupled data flows through the application layers.</p>
+
+            <div class="arch-svg-container">
+                <svg viewBox="0 0 700 450" width="100%" height="auto">
+                    <defs>
+                        <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                            <path d="M 0 2 L 10 5 L 0 8 z" fill="#64748B"/>
+                        </marker>
+                    </defs>
+                    <!-- Layer 1: UI -->
+                    <rect x="225" y="20" width="250" height="45" rx="6" fill="#F1F5F9" stroke="#cbd5e1" stroke-width="2"/>
+                    <text x="350" y="47" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#0F172A">Streamlit Client Interface (UI)</text>
+                    
+                    <!-- Line 1 -> 2 -->
+                    <path d="M 350 65 L 350 100" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Layer 2: API (FastAPI) -->
+                    <rect x="225" y="105" width="250" height="45" rx="6" fill="#E0F2FE" stroke="#3b82f6" stroke-width="2"/>
+                    <text x="350" y="132" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#0369A1">API Controller Layer (FastAPI)</text>
+
+                    <!-- Line 2 -> 3 -->
+                    <path d="M 350 150 L 350 185" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)"/>
+                    
+                    <!-- Layer 3: Service Layer -->
+                    <rect x="225" y="190" width="250" height="45" rx="6" fill="#F3E8FF" stroke="#a855f7" stroke-width="2"/>
+                    <text x="350" y="217" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#6B21A8">Service Orchestration Layer (ReviewService)</text>
+
+                    <!-- Connections from Service -->
+                    <!-- Left: Prompts -->
+                    <path d="M 225 212.5 L 140 212.5 L 140 255" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)"/>
+                    <rect x="40" y="260" width="180" height="40" rx="6" fill="#FFFBEB" stroke="#f59e0b" stroke-width="2"/>
+                    <text x="130" y="285" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#92400E">Prompts Builder</text>
+
+                    <!-- Center: Providers -->
+                    <path d="M 350 235 L 350 255" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)"/>
+                    <rect x="250" y="260" width="200" height="40" rx="6" fill="#ECEFEE" stroke="#10b981" stroke-width="2"/>
+                    <text x="350" y="285" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#0F5132">LLM Provider Interface</text>
+
+                    <!-- Right: Repositories -->
+                    <path d="M 475 212.5 L 560 212.5 L 560 255" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)"/>
+                    <rect x="480" y="260" width="180" height="40" rx="6" fill="#E6FFFA" stroke="#0d9488" stroke-width="2"/>
+                    <text x="570" y="285" text-anchor="middle" font-family="sans-serif" font-size="11" font-weight="700" fill="#0F766E">Repository Layer</text>
+
+                    <!-- DB Sink Connection -->
+                    <path d="M 570 300 L 570 345 L 350 345 L 350 375" fill="none" stroke="#64748B" stroke-width="2" marker-end="url(#arrow)"/>
+                    <!-- Database Layer -->
+                    <rect x="225" y="380" width="250" height="45" rx="6" fill="#E2E8F0" stroke="#475569" stroke-width="2"/>
+                    <text x="350" y="407" text-anchor="middle" font-family="sans-serif" font-size="12" font-weight="700" fill="#1E293B">Database Tier (SQLite Engine)</text>
+                </svg>
+            </div>
+        </section>
+
+        <!-- 7. Layer Responsibilities -->
+        <section id="layers" class="doc-section accent-architecture">
+            <h2 class="section-title">🧩 7. Layer Duties &amp; Boundaries</h2>
+            <p class="section-description">A matrix detailing exact duties across components of the backend codebase.</p>
+            
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">API Layer (FastAPI Route Handlers)</div>
+                    <div class="block-item-content">
+                        • Intercepts incoming requests.<br>
+                        • Validates parameters, schemas, and binary file streams inputs.<br>
+                        • Catches system errors and formats HTTP Exception returns (ADR-039).
+                    </div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Service Layer (Workflow Orchestrators)</div>
+                    <div class="block-item-content">
+                        • Executes core transactional logic loops.<br>
+                        • Assembles prompts using parameters.<br>
+                        • Calls provider adapters.<br>
+                        • Parses responses and saves schema data models to Repositories.
+                    </div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Repository Layer (Data Access Abstraction)</div>
+                    <div class="block-item-content">
+                        • Formulates SQLAlchemy query executions.<br>
+                        • Manages transactional entities lifecycle mapping operations (insert, update, delete).
+                    </div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Domain Database Tier (SQLAlchemy Entities)</div>
+                    <div class="block-item-content">
+                        • Declares SQLAlchemy structural maps.<br>
+                        • Enforces unique indexing, relationships validation, and auditable timestamps metadata.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 8. Dependency Rules -->
+        <section id="dependency-rules" class="doc-section accent-architecture">
+            <h2 class="section-title">🔗 8. Dependency Rules</h2>
+            <p class="section-description">Visual representation showing restricted reference flows within backend components.</p>
+            
+            <div class="callout important">
+                <div class="callout-title">Dependency Rule Standard</div>
+                <div class="callout-desc">
+                    Dependencies flow downward exclusively. No circular dependencies or bypass routes are permitted inside codebase files.
+                </div>
+            </div>
+
+            <table style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Source Component</th>
+                        <th>Permitted Target References</th>
+                        <th>Prohibited Referencing Targets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>API routers</strong></td>
+                        <td>Services, Schemas, Constants, Configs</td>
+                        <td>SQLAlchemy ORM Entities, SQLite database engine</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Services</strong></td>
+                        <td>Repositories, Providers, Prompts Builder, Schemas, Models</td>
+                        <td>FastAPI framework routes, client controllers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repositories</strong></td>
+                        <td>SQLAlchemy Models, Constants</td>
+                        <td>Service Orchestrators, API Routers, Providers</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Database Models</strong></td>
+                        <td>Base Model, Mixins, Enums</td>
+                        <td>Repositories, Services, API classes</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 9. Coding Standards -->
+        <section id="standards" class="doc-section accent-backend">
+            <h2 class="section-title">📝 9. Coding Standards</h2>
+            <p class="section-description">Rules governing the creation of Python modules, error handling layers, and logging.</p>
+
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">Type Safety Policy</div>
+                    <div class="block-item-content">Every method declaration must contain type annotations. Use Python 3.11 type union styles (e.g. <code>dict[str, str] | None</code>) instead of importing from legacy typing modules.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title"> Centralized Logging System</div>
+                    <div class="block-item-content">All modules consume loguru using labels (e.g., <code>logger.bind(component="review_service")</code>). Standard print outputs or logging modules are banned.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Configuration Policy</div>
+                    <div class="block-item-content">Read configurations exclusively from <code>backend/config.py</code>. API credential keys must be checked on startup; fail-fast if settings validation checks fail.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 10. Naming Conventions -->
+        <section id="naming" class="doc-section accent-backend">
+            <h2 class="section-title">🏷️ 10. Naming Conventions</h2>
+            <p class="section-description">Naming patterns for backend source code directories, databases model declarations, and schemas.</p>
+
+            <table style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Class / Construct Name</th>
+                        <th>Naming Pattern</th>
+                        <th>Example</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>SQLAlchemy Models</strong></td>
+                        <td>PascalCase, singular, inherits <code>BaseModel</code></td>
+                        <td><code>class ReviewExecution(BaseModel)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pydantic Schemas</strong></td>
+                        <td>PascalCase, suffixing <code>Request</code> or <code>Response</code></td>
+                        <td><code>class ReviewRequest(BaseModel)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Repositories</strong></td>
+                        <td>PascalCase, suffixing <code>Repository</code></td>
+                        <td><code>class IssueRepository(BaseRepository)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mixin Modules</strong></td>
+                        <td>PascalCase, suffixing <code>Mixin</code></td>
+                        <td><code>class UUIDMixin(object)</code></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Constants &amp; Enums</strong></td>
+                        <td>UPPERCASE snake_case</td>
+                        <td><code>DEFAULT_REVIEW_SCORE = 0</code></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 11. Development Workflow -->
+        <section id="workflow" class="doc-section accent-backend">
+            <h2 class="section-title">🚀 11. Development Workflow</h2>
+            <p class="section-description">Detailed shell commands layout to bootstrap the application environment locally.</p>
+
+            <div class="pre-wrapper">
+                <div class="pre-header">
+                    <span>PowerShell — Local Dev Bootstrap</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre># 1. Activate project virtual environment
+.venv\Scripts\activate
+
+# 2. Verify all requirements are resolved
+pip install -r requirements.txt
+
+# 3. Duplicate environments example profile
+copy .env.example .env
+# Edit your local .env to insert GROQ_API_KEY or GEMINI_API_KEY variables
+
+# 4. Boot local API server with hot-reload enabled
+uvicorn backend.main:app --host 127.0.0.1 --port 8000 --reload</pre>
+            </div>
+        </section>
+
+        <!-- 12. Definition of Done -->
+        <section id="dod" class="doc-section accent-backend">
+            <h2 class="section-title">✅ 12. Definition of Done</h2>
+            <p class="section-description">A ticket is marked complete only when it satisfies this quality checklist.</p>
+            
+            <ul class="checklist">
+                <li><input type="checkbox" id="dod-cb-1" checked disabled><label for="dod-cb-1"><strong>Architecture Reviewed:</strong> No circular layers imports or bypassed tiers exist.</label></li>
+                <li><input type="checkbox" id="dod-cb-2" checked disabled><label for="dod-cb-2"><strong>Tests Verified:</strong> 100% test directory coverage verified via pytest execution.</label></li>
+                <li><input type="checkbox" id="dod-cb-3" checked disabled><label for="dod-cb-3"><strong>Documentation Synced:</strong> Relevant API Swagger metrics and ADR records are updated.</label></li>
+                <li><input type="checkbox" id="dod-cb-4" checked disabled><label for="dod-cb-4"><strong>Manual Testing:</strong> Endpoints tested through Swagger UI sandbox (<code>/docs</code>).</label></li>
+                <li><input type="checkbox" id="dod-cb-5" checked disabled><label for="dod-cb-5"><strong>No Regressions:</strong> SQLite WAL mode locks are inspected and verified.</label></li>
+            </ul>
+        </section>
+
+        <!-- 13. Backend Status -->
+        <section id="status" class="doc-section accent-backend">
+            <h2 class="section-title">📊 13. Backend Status</h2>
+            <p class="section-description">Visual representation of completed architecture components.</p>
+            
+            <div class="progress-group">
+                <div class="progress-label"><span>Database ORM Models Schema Layout</span><span>100%</span></div>
+                <div class="progress-bar-track"><div class="progress-bar-fill" style="width: 100%; background-color: var(--success);"></div></div>
+            </div>
+            <div class="progress-group">
+                <div class="progress-label"><span>Stateless ReviewService Orchestration Layer</span><span>100%</span></div>
+                <div class="progress-bar-track"><div class="progress-bar-fill" style="width: 100%; background-color: var(--success);"></div></div>
+            </div>
+            <div class="progress-group">
+                <div class="progress-label"><span>REST API version v1.0 Route Handlers</span><span>100%</span></div>
+                <div class="progress-bar-track"><div class="progress-bar-fill" style="width: 100%; background-color: var(--success);"></div></div>
+            </div>
+            <div class="progress-group">
+                <div class="progress-label"><span>Mock-based Integration Tests Suite</span><span>100%</span></div>
+                <div class="progress-bar-track"><div class="progress-bar-fill" style="width: 100%; background-color: var(--success);"></div></div>
+            </div>
+        </section>
+
+        <!-- 14. Database Responsibilities -->
+        <section id="database" class="doc-section accent-backend">
+            <h2 class="section-title">💾 14. Database Responsibilities</h2>
+            <p class="section-description">The persistence layout targets SQLite for local simplicity and zero footprint configurations.</p>
+            
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">SQLite WAL Mode (Write-Ahead Logging)</div>
+                    <div class="block-item-content">Enabled on engine connect. Prevents concurrent dashboard read actions from locking during ongoing AI review write queries.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">Cascade Deletions Enforcement</div>
+                    <div class="block-item-content">Parent <code>reviews</code> rows automatically trigger cascade deletions on downstream <code>issues</code> and <code>review_executions</code> telemetry records to prevent database clutter.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">UUID primary identities generation</div>
+                    <div class="block-item-content">Models inherit <code>UUIDMixin</code> generating 36-character random UUID string keys, preventing sequence scan issues.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 15. AI Pipeline -->
+        <section id="pipeline" class="doc-section accent-backend">
+            <h2 class="section-title">🧠 15. AI Pipeline Execution Steps</h2>
+            <p class="section-description">Workflow detailing how source files are audited by Large Language Models.</p>
+            
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">1. Code Ingestion &amp; Language Check</div>
+                    <div class="block-item-content">Verify file payload is under the 5MB setting limit. Match file extension to resolved language enums.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">2. Prompt Rendering (ADR-030)</div>
+                    <div class="block-item-content">Combine system prompt blueprints (score scales, JSON rules) with dynamic parameters (untrusted code content blocks).</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">3. Provider Dispatch</div>
+                    <div class="block-item-content">Pass prompt content down to provider factories (Gemini / Groq SDK wrapper clients) using configurable timeouts (120s default).</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">4. Response Parsing (ADR-027)</div>
+                    <div class="block-item-content">Regex boundary extraction isolates structural JSON templates from returned text formats. Malformed blocks raise parsing exceptions.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">5. Persistence Step</div>
+                    <div class="block-item-content">Map parsed keys directly to database classes, write to repositories inside transaction loops, and perform database session commits.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 16. Testing Strategy -->
+        <section id="testing" class="doc-section accent-testing">
+            <h2 class="section-title">🧪 16. Testing Strategy</h2>
+            <p class="section-description">Our validation matrix uses pytest to guarantee endpoint sanity and code coverage.</p>
+            
+            <table style="margin-top: 1rem;">
+                <thead>
+                    <tr>
+                        <th>Verification Target</th>
+                        <th>Test Location</th>
+                        <th>Testing Objective</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>FastAPI Controllers</strong></td>
+                        <td><code>tests/api/</code></td>
+                        <td>Validates HTTP status returns, pagination limit query inputs, and file upload parameters.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Review Logic Workflow</strong></td>
+                        <td><code>tests/services/</code></td>
+                        <td>Checks atomic transaction states (e.g. database rollback triggers on mock API timeouts).</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Response Extraction</strong></td>
+                        <td><code>tests/parser/</code></td>
+                        <td>Asserts regex parsing resilience against malformed strings or extra JSON data variables.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Mock Providers</strong></td>
+                        <td><code>tests/providers/</code></td>
+                        <td>Verifies client wrapper mappings, API error conversion matrices, and key structures.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 17. Current Progress -->
+        <section id="progress" class="doc-section accent-roadmap">
+            <h2 class="section-title">📈 17. Current Progress</h2>
+            <p class="section-description">Project completion statuses based on the current version freeze roadmap goals.</p>
+            
+            <ul class="checklist">
+                <li><input type="checkbox" id="prog-cb-1" checked disabled><label for="prog-cb-1"><strong>Phase 0 — Infrastructure Core Setup:</strong> Requirements verification, logging utilities.</label></li>
+                <li><input type="checkbox" id="prog-cb-2" checked disabled><label for="prog-cb-2"><strong>Phase 1 — Backend API Foundation:</strong> Routing maps, centralized configurations, database wrappers.</label></li>
+                <li><input type="checkbox" id="prog-cb-3" checked disabled><label for="prog-cb-3"><strong>Phase 2 — Relational Storage Models:</strong> UUID key mixins, database repository classes, unit testing mock integrations.</label></li>
+                <li><input type="checkbox" id="prog-cb-4" disabled><label for="prog-cb-4"><strong>Phase 3 — Streamlit Frontend UI dashboard:</strong> Interface graphs visualization layouts (In Progress / Next).</label></li>
+            </ul>
+        </section>
+
+        <!-- 18. Current Non-Goals -->
+        <section id="non-goals" class="doc-section accent-roadmap">
+            <h2 class="section-title">🚫 18. Current Non-Goals</h2>
+            <p class="section-description">Feature paths omitted from Version 1.0 specifications.</p>
+            
+            <ul>
+                <li><strong>No Directory Tree indexing:</strong> Multi-file reviews and chunking pipelines are deferred to Version 2.0.</li>
+                <li><strong>No Semantic Vector store integrations:</strong> RAG architectures and semantic Q&amp;A layouts are excluded from this release.</li>
+                <li><strong>No Multi-tenant architecture:</strong> Local standalone execution represents the single client constraint model.</li>
+                <li><strong>No Auto-remediation updates:</strong> The code review pipeline is strictly read-only and does not edit user files.</li>
+            </ul>
+        </section>
+
+        <!-- 19. Future Roadmap Timeline -->
+        <section id="roadmap-sec" class="doc-section accent-roadmap">
+            <h2 class="section-title">🗺️ 19. Future Roadmap</h2>
+            <p class="section-description">Planned development directions for future versions of the application.</p>
+            
+            <div class="roadmap-timeline" style="grid-template-columns: repeat(3, 1fr); display: grid; gap: 1rem; margin: 1rem 0;">
+                <div class="roadmap-card completed" style="background-color: var(--secondary-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; border-top: 4px solid var(--success);">
+                    <h5 style="margin-bottom: 0.5rem;">Version 1.0 (Current)</h5>
+                    <span class="badge success" style="margin-bottom: 0.5rem;">Released</span>
+                    <p style="font-size: 0.8rem; color: var(--muted);">Backend, db repository patterns, unit test mock suites, Groq &amp; Gemini SDK adapters.</p>
+                </div>
+                <div class="roadmap-card current" style="background-color: var(--secondary-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; border-top: 4px solid var(--primary);">
+                    <h5 style="margin-bottom: 0.5rem;">Version 1.5 (Planned)</h5>
+                    <span class="badge primary" style="margin-bottom: 0.5rem;">In Progress</span>
+                    <p style="font-size: 0.8rem; color: var(--muted);">Streamlit interface integration, Docker configurations setup, visual breakdown charts.</p>
+                </div>
+                <div class="roadmap-card upcoming" style="background-color: var(--secondary-surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; border-top: 4px solid var(--warning);">
+                    <h5 style="margin-bottom: 0.5rem;">Version 2.0 (Future)</h5>
+                    <span class="badge warning" style="margin-bottom: 0.5rem;">Upcoming</span>
+                    <p style="font-size: 0.8rem; color: var(--muted);">Multi-file codebase parsing, vector storage search, semantic repository Q&amp;A.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- 20. Stretch Goals -->
+        <section id="stretch" class="doc-section accent-roadmap">
+            <h2 class="section-title">🎯 20. Stretch Goals</h2>
+            <p class="section-description">Optional features scheduled for subsequent integration cycles.</p>
+            
+            <ul>
+                <li><strong>CI/CD GitHub Action Hook:</strong> Trigger automated code reviews on GitHub Pull Requests.</li>
+                <li><strong>PDF Review Report PDF exporter:</strong> Export audit summaries to PDF using ReportLab templates.</li>
+                <li><strong>Local playground routing:</strong> Support local Ollama configurations for offline execution.</li>
+            </ul>
+        </section>
+
+        <!-- 21. Project Timeline Path -->
+        <section id="timeline" class="doc-section accent-roadmap">
+            <h2 class="section-title">⏳ 21. Project Timeline</h2>
+            <p class="section-description">Historical progression path showing target delivery milestones.</p>
+            
+            <div class="project-timeline">
+                <div class="timeline-step completed">
+                    <div class="step-indicator">✓</div>
+                    <div class="step-label">Setup</div>
+                </div>
+                <div class="timeline-step completed">
+                    <div class="step-indicator">✓</div>
+                    <div class="step-label">Backend</div>
+                </div>
+                <div class="timeline-step active">
+                    <div class="step-indicator">3</div>
+                    <div class="step-label">Testing</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-indicator">4</div>
+                    <div class="step-label">Docker</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-indicator">5</div>
+                    <div class="step-label">Frontend</div>
+                </div>
+                <div class="timeline-step">
+                    <div class="step-indicator">6</div>
+                    <div class="step-label">Deploy</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 22. ADR Index -->
+        <section id="adr-index" class="doc-section accent-architecture">
+            <h2 class="section-title">📑 22. Architecture Decisions Index</h2>
+            <p class="section-description">Quick index referencing architectural decision records (ADR) logs.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>ADR ID</th>
+                        <th>Decision Target Title</th>
+                        <th>Category</th>
+                        <th>Approved Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>ADR-001</strong></td>
+                        <td><a href="#adr-001" style="color: var(--primary); text-decoration: none;">Layered Architecture Structure</a></td>
+                        <td>System Layout</td>
+                        <td><span class="badge success">Accepted</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ADR-002</strong></td>
+                        <td><a href="#adr-002" style="color: var(--primary); text-decoration: none;">Centralized Settings (Pydantic)</a></td>
+                        <td>Configuration</td>
+                        <td><span class="badge success">Accepted</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ADR-015</strong></td>
+                        <td><a href="#adr-015" style="color: var(--primary); text-decoration: none;">Shared BaseModel Base Class</a></td>
+                        <td>ORM Design</td>
+                        <td><span class="badge success">Accepted</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ADR-016</strong></td>
+                        <td><a href="#adr-016" style="color: var(--primary); text-decoration: none;">Decoupled Identity &amp; Timestamp Mixins</a></td>
+                        <td>ORM Design</td>
+                        <td><span class="badge success">Accepted</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>ADR-017</strong></td>
+                        <td><a href="#adr-017" style="color: var(--primary); text-decoration: none;">Centralized models/enums.py</a></td>
+                        <td>Domain Models</td>
+                        <td><span class="badge success">Accepted</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 23. Detailed ADR Log -->
+        <section id="adr-details" class="doc-section accent-architecture">
+            <h2 class="section-title">📑 23. Detailed Architecture Decisions Log</h2>
+            <p class="section-description">Detailed reasoning logs documenting key architectural decisions.</p>
+
+            <div class="decision-box" id="adr-001">
+                <div class="decision-header">
+                    <h5>ADR-001: Strict Layered Architecture</h5>
+                    <span class="badge success">Accepted</span>
+                </div>
+                <div class="decision-body">
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Decision:</strong> Divide backend code into clean modules (UI → API routes → Services → Databases Repositories → SQLite).</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Reasoning:</strong> Enforces modularity, isolates business logic from SQL frameworks, and eases integration testing.</p>
+                    <div class="decision-meta">
+                        <span>Scope: System Layout</span>
+                        <span>Approved: July 2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="decision-box" id="adr-002">
+                <div class="decision-header">
+                    <h5>ADR-002: Centralized Settings via Pydantic</h5>
+                    <span class="badge success">Accepted</span>
+                </div>
+                <div class="decision-body">
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Decision:</strong> Use pydantic-settings inside <code>backend/config.py</code> as the sole settings manager. Direct env-reads outside the config file are banned.</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Reasoning:</strong> Ensures runtime variables are checked and typed on startup, avoiding downstream KeyError issues.</p>
+                    <div class="decision-meta">
+                        <span>Scope: Configuration</span>
+                        <span>Approved: July 2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="decision-box" id="adr-015">
+                <div class="decision-header">
+                    <h5>ADR-015: Shared BaseModel Base Class</h5>
+                    <span class="badge success">Accepted</span>
+                </div>
+                <div class="decision-body">
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Decision:</strong> Create an abstract <code>BaseModel</code> parent class that houses standard system columns (id, created_at, updated_at).</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Reasoning:</strong> Avoids duplicating database audit columns across model schemas, centralizing identity policies.</p>
+                    <div class="decision-meta">
+                        <span>Scope: ORM Design</span>
+                        <span>Approved: July 2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="decision-box" id="adr-016">
+                <div class="decision-header">
+                    <h5>ADR-016: Decoupled ID &amp; Audit Mixins</h5>
+                    <span class="badge success">Accepted</span>
+                </div>
+                <div class="decision-body">
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Decision:</strong> Extract ID mapping features to <code>UUIDMixin</code> and auditing variables to <code>TimestampMixin</code>.</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Reasoning:</strong> Improves code reuse. Models can inherit only the specific columns they require.</p>
+                    <div class="decision-meta">
+                        <span>Scope: ORM Design</span>
+                        <span>Approved: July 2026</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="decision-box" id="adr-017">
+                <div class="decision-header">
+                    <h5>ADR-017: Centralized models/enums.py Domain Alignment</h5>
+                    <span class="badge success">Accepted</span>
+                </div>
+                <div class="decision-body">
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Decision:</strong> Move severity levels, category types, languages, and pipeline status enums to a centralized <code>models/enums.py</code> module.</p>
+                    <p style="font-size: 0.9rem; margin-bottom: 0.5rem;"><strong>Reasoning:</strong> Eliminates circular database model imports and standardizes API serialization.</p>
+                    <div class="decision-meta">
+                        <span>Scope: Domain Models</span>
+                        <span>Approved: July 2026</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 24. Appendix: Folder Structure -->
+        <section id="app-folders" class="doc-section">
+            <h2 class="section-title">📂 24. Appendix: Folder Structure</h2>
+            <p class="section-description">Project directory layout detailing module placement standards.</p>
+            
+            <div class="pre-wrapper">
+                <div class="pre-header">
+                    <span>Repository Tree</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre>AI-Code-Reviewer/
+├── backend/
+│   ├── api/                  # FastAPI controllers
+│   │   ├── v1/               # Endpoint versions
+│   │   ├── dependencies.py   # DI sessions setup
+│   │   └── exceptions.py     # HTTP mapping translation
+│   ├── database/             # Relational session setups
+│   │   ├── repositories/     # Repository layer components
+│   │   └── init_db.py        # Schema bootstrappers
+│   ├── models/               # SQLAlchemy DB Models
+│   │   ├── mixins/           # UUID &amp; Audit Mixins
+│   │   └── enums.py          # Centralized domain enums
+│   ├── prompts/              # System prompt blueprints
+│   ├── providers/            # AI Platform Adapters
+│   ├── schemas/              # Pydantic validation structures
+│   ├── services/             # Core ReviewService workflow
+│   └── main.py               # Central boot script
+├── frontend/                 # Client visualization codebase
+└── tests/                    # Pytest verification suites</pre>
+            </div>
+        </section>
+
+        <!-- 25. Appendix: API Inventory -->
+        <section id="app-api" class="doc-section">
+            <h2 class="section-title">🔌 25. Appendix: API Route Directory</h2>
+            <p class="section-description">Exposed FastAPI backend REST endpoints directory.</p>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>HTTP Verb</th>
+                        <th>Path URI</th>
+                        <th>Access Payload</th>
+                        <th>Behavior Summary</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><span class="badge success">POST</span></td>
+                        <td><code>/api/v1/review</code></td>
+                        <td>JSON Request Payload</td>
+                        <td>Submit raw source text snippets for review.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge success">POST</span></td>
+                        <td><code>/api/v1/review/file</code></td>
+                        <td>Multipart Form Binary</td>
+                        <td>Upload physical files for review.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge primary">GET</span></td>
+                        <td><code>/api/v1/reviews</code></td>
+                        <td>Query parameters</td>
+                        <td>Paginated query list of historical review jobs.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge primary">GET</span></td>
+                        <td><code>/api/v1/reviews/{id}</code></td>
+                        <td>Path variable UUID</td>
+                        <td>Fetch full analysis details by review identifier.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge danger">DELETE</span></td>
+                        <td><code>/api/v1/reviews/{id}</code></td>
+                        <td>Path variable UUID</td>
+                        <td>Delete a review record and cascade-delete dependencies.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge primary">GET</span></td>
+                        <td><code>/api/v1/dashboard</code></td>
+                        <td>None</td>
+                        <td>Fetch dashboard overview statistics.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge primary">GET</span></td>
+                        <td><code>/api/v1/models</code></td>
+                        <td>None</td>
+                        <td>Get active provider and settings details.</td>
+                    </tr>
+                    <tr>
+                        <td><span class="badge neutral">GET</span></td>
+                        <td><code>/health</code></td>
+                        <td>None</td>
+                        <td>Simple health check for system monitoring.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- 26. Appendix: Environment Variables -->
+        <section id="app-env" class="doc-section">
+            <h2 class="section-title">⚙️ 26. Appendix: Environment Configurations</h2>
+            <p class="section-description">Required keys for running the application locally.</p>
+            
+            <div class="pre-wrapper">
+                <div class="pre-header">
+                    <span>.env template</span>
+                    <button class="copy-btn" onclick="copyCode(this)">Copy</button>
+                </div>
+                <pre># Core Server
+APP_NAME="AI Code Review Assistant"
+APP_VERSION="1.0.0"
+DEBUG=True
+HOST="127.0.0.1"
+PORT=8000
+
+# Database
+DATABASE_URL="sqlite:///./ai_code_reviewer.db"
+
+# LLM Providers Configuration
+LLM_PROVIDER="groq" # Target choices: "groq" or "gemini"
+MAX_TOKENS=4096
+TEMPERATURE=0.2
+
+# Provider Keys (Input target keys below)
+GROQ_API_KEY="your-groq-api-key-here"
+GROQ_MODEL="llama-3.3-70b-versatile"
+
+GEMINI_API_KEY="your-gemini-api-key-here"
+GEMINI_MODEL="gemini-2.5-flash"</pre>
+            </div>
+        </section>
+
+        <!-- 27. Appendix: Glossary & References -->
+        <section id="app-glossary" class="doc-section">
+            <h2 class="section-title">📚 27. Appendix: Glossary &amp; References</h2>
+            <p class="section-description">Explanation of system acronyms and reference materials.</p>
+            
+            <div class="block-list">
+                <div class="block-item">
+                    <div class="block-item-title">ADR (Architecture Decision Record)</div>
+                    <div class="block-item-content">Structured text document capturing an architectural decision, its context, reasoning, and system consequences.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">WAL (Write-Ahead Logging)</div>
+                    <div class="block-item-content">SQLite configuration allowing read queries to execute concurrently while write queries update the database.</div>
+                </div>
+                <div class="block-item">
+                    <div class="block-item-title">RAG (Retrieval-Augmented Generation)</div>
+                    <div class="block-item-content">System integrating external database queries with LLM prompting pipelines to supply localized file context.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 28. Closing Notes -->
+        <section id="app-notes" class="doc-section">
+            <h2 class="section-title">📝 28. Closing Engineering Notes</h2>
+            <p class="section-description">Architect's summary on project completeness and future maintenance pathing.</p>
+            <p>
+                Version 1.0 of the AI Code Reviewer represents a robust backend core. Standardizing models via decoupled mixins and isolation enums allows developers to extend model targets easily. Future iterations (V2.0) will build upon this foundation to support whole-directory scans, and containerized dev environments.
+            </p>
+        </section>
+
+        <footer>
+            <p>© 2026 AI Code Reviewer Core Development Team. Registered under MIT configurations specifications.</p>
+        </footer>
+    </div>
+
+    <!-- Script triggers for sidebar navigation sync & theme switching -->
+    <script>
+        // Theme toggler implementation logic
+        const themeBtn = document.getElementById('theme-toggle');
+        const themeIcon = document.getElementById('theme-icon');
+        
+        themeBtn.addEventListener('click', () => {
+            document.body.classList.toggle('dark-theme');
+            const isDark = document.body.classList.contains('dark-theme');
+            themeIcon.textContent = isDark ? '☀️' : '🌙';
+            localStorage.setItem('doc-theme', isDark ? 'dark' : 'light');
+        });
+
+        // Restore user theme preference
+        window.addEventListener('DOMContentLoaded', () => {
+            const savedTheme = localStorage.getItem('doc-theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-theme');
+                themeIcon.textContent = '☀️';
+            }
+        });
+
+        // Copy button trigger implementation
+        function copyCode(buttonElement) {
+            const preElement = buttonElement.parentElement.nextElementSibling;
+            const textToCopy = preElement.textContent;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = buttonElement.textContent;
+                buttonElement.textContent = 'Copied!';
+                buttonElement.style.borderColor = '#10B981';
+                buttonElement.style.color = '#10B981';
+                
+                setTimeout(() => {
+                    buttonElement.textContent = originalText;
+                    buttonElement.style.borderColor = '';
+                    buttonElement.style.color = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        }
+
+        // Active link dynamic scroll highlight tracker
+        const sections = document.querySelectorAll('section, header.handbook-header');
+        const navLinks = document.querySelectorAll('aside.sidebar ul li a');
+        const crumbNav = document.getElementById('crumb-nav');
+
+        window.addEventListener('scroll', () => {
+            let currentActive = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= (sectionTop - 120)) {
+                    currentActive = section.getAttribute('id');
+                }
+            });
+
+            if (currentActive) {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${currentActive}`) {
+                        link.classList.add('active');
+                        // Update breadcrumb text content dynamically
+                        const groupTitle = link.closest('.sidebar-nav-group').querySelector('.sidebar-group-title').textContent;
+                        crumbNav.textContent = `${groupTitle} > ${link.textContent}`;
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

@@ -11,6 +11,7 @@ __pycache__/
 *.egg
 .pytest_cache/
 .mypy_cache/
+.coverage
 
 # =====================================================================
 # 2?? Virtual Environments & Dependencies
@@ -49,6 +50,8 @@ secrets.json
 # 4?? Database Storage Engines & Persistent Caches
 # =====================================================================
 *.db
+*.db-shm
+*.db-wal
 *.sqlite3
 
 # =====================================================================
