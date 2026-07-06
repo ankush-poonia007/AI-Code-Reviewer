@@ -1,0 +1,25 @@
+services:
+  backend:
+    container_name: ai-code-reviewer-backend
+
+    image: ai-code-reviewer:v1
+
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    env_file:
+      - .env
+
+    ports:
+      - "8000:8000"
+
+    volumes:
+      - ./logs:/app/logs
+      - ./uploads:/app/uploads
+      - ./ai_code_reviewer.db:/app/ai_code_reviewer.db
+
+    restart: unless-stopped
+
+    stdin_open: true
+    tty: true
